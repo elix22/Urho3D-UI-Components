@@ -98,6 +98,8 @@ TabElement* TabGroup::CreateTab(const IntVector2 &tabSize, const IntVector2 &bod
     tabElement.tabBody_ = new BorderImage(context_);
     bodyContainer_->AddChild(tabElement.tabBody_);
 
+    tabElement.tabBody_->SetStyle("TabBody");
+    tabElement.tabBody_->SetImageRect(IntRect(192, 80, 208, 96));
     tabElement.tabBody_->SetSize(bodySize);
     tabElement.tabBody_->SetVisible(childList_.Size() == 0);
 

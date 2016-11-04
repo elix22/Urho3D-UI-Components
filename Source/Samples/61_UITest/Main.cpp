@@ -164,7 +164,9 @@ void Main::CreateTabGroup()
         tabElement->tabText_->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 8);
         tabElement->tabText_->SetText(tabLabel);
 
-        tabElement->tabBody_->SetColor(Color(0.2f,0.2f,0.2f));
+        tabElement->tabButton_->SetColor(Color(0.3f,0.7f,0.3f));
+        tabElement->tabBody_->SetColor(Color(0.3f,0.7f,0.3f));
+
         Text *bodyText = tabElement->tabBody_->CreateChild<Text>();
         bodyText->SetAlignment(HA_CENTER, VA_CENTER);
         bodyText->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 12);
@@ -278,7 +280,7 @@ void Main::CreateSliderVariable()
 
     slideBar->FrameSetColor(Color(0,0,0,0));
     slideBar->SetColor(Color(0.2f,0.2f,0.2f));
-    slideBar->SetSliderColor(Color::RED);//(0.5f,0.3f,0.3f));
+    slideBar->SetSliderColor(Color(0.8f,0.3f,0.3f));
 
     slideBar->GetHeaderText()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 12);
     slideBar->GetHeaderText()->SetText("Slider Value (drag)");
@@ -286,7 +288,7 @@ void Main::CreateSliderVariable()
 
     slideBar->SetVariantRange( (Variant)0.0f, (Variant)1.0f);
     slideBar->SetCurrentValue((Variant)0.0f );
-    slideBar->SetSensitivity(0.002f);
+    slideBar->SetSensitivity(0.005f);
     slideBar->SetEnabled(true);
 
     // assign callback
