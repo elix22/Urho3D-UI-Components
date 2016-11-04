@@ -93,14 +93,10 @@ public:
 
     void SetSize(int width, int height);
     void SetSize(const IntVector2& size);
-
-    void FrameSetColor(const Color& color);
-    void SetBodyColor(const Color& color);
     void SetSliderColor(const Color& color);
-
     void SetEnabled(bool enable);
 
-    void SetVariantRange(Variant &vmin, Variant &vmax);
+    void SetRange(Variant &vmin, Variant &vmax);
     void SetCurrentValue(Variant &val);
     void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
 

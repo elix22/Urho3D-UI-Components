@@ -249,15 +249,6 @@ void SlideBar::SetSize(const IntVector2& size)
     UIElement::SetSize(size);
 }
 
-void SlideBar::FrameSetColor(const Color& color)
-{
-    UIElement::SetColor(color);
-}
-
-void SlideBar::SetBodyColor(const Color& color)
-{
-}
-
 void SlideBar::SetSliderColor(const Color& color)
 {
     if (sliderElement_)
@@ -275,7 +266,7 @@ void SlideBar::SetEnabled(bool enable)
     }
 }
 
-void SlideBar::SetVariantRange(Variant &vmin, Variant &vmax)
+void SlideBar::SetRange(Variant &vmin, Variant &vmax)
 {
     float minVal, maxVal;
     varMin_ = vmin;

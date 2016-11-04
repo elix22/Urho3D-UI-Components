@@ -258,11 +258,11 @@ void Main::CreateSliderVariable()
         void SetBackgroundColor(const Color &color) { colorBackground_ = color; }
         void RedColorHandler(Variant &var)
         {
-            float red = var.GetFloat();
-            colorBackground_.r_ = red;
+            colorBackground_.r_ = var.GetFloat();
             GetSubsystem<Renderer>()->GetDefaultZone()->SetFogColor(colorBackground_);
         }
 
+    protected:
         Color colorBackground_;
     };
 
@@ -278,7 +278,6 @@ void Main::CreateSliderVariable()
     const IntVector2 barsize(280, 50);
     slideBar->CreateBar(barsize);
 
-    slideBar->FrameSetColor(Color(0,0,0,0));
     slideBar->SetColor(Color(0.2f,0.2f,0.2f));
     slideBar->SetSliderColor(Color(0.8f,0.3f,0.3f));
 
@@ -286,7 +285,7 @@ void Main::CreateSliderVariable()
     slideBar->GetHeaderText()->SetText("Slider Value (drag)");
     //slideBar->GetHeaderElement()->SetVisible(false);
 
-    slideBar->SetVariantRange( (Variant)0.0f, (Variant)1.0f);
+    slideBar->SetRange((Variant)0.0f, (Variant)1.0f);
     slideBar->SetCurrentValue((Variant)0.0f );
     slideBar->SetSensitivity(0.005f);
     slideBar->SetEnabled(true);
