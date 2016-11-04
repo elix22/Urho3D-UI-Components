@@ -4,7 +4,7 @@
 Description
 -----------------------------------------------------------------------------------
 Perhaps, some helpful UI component classes. Minor changes to CheckBox.h file, UI.png,  
-and DefaultStyle.xml. Be sure to backup those files before you drap this resource into your sandbox.
+and DefaultStyle.xml. Be sure to backup those files before you drop this resource into your sandbox.
 
 Screenshot
 -----------------------------------------------------------------------------------
