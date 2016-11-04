@@ -105,6 +105,7 @@ CheckboxDesc* CheckBoxGroup::CreateCheckboxDesc(const String& desc)
 
     chkDesc.checkBox_ = element->CreateChild<CheckBox>();
     chkDesc.checkBox_->SetStyleAuto();
+    chkDesc.checkBox_->SetImageRect(IntRect(208, 96, 224, 112));
     chkDesc.checkBox_->SetChecked(childList_.Size() == 0);
 
     chkDesc.desc_ = element->CreateChild<CheckText>();

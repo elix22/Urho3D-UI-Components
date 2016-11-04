@@ -126,7 +126,8 @@ void Main::CreateCheckboxGroup()
     for (int i = 0; i < 4; ++i)
     {
         String desc = String("checkbox ") + String(i+1) + String(" - (click text)"); 
-        ckboxGroup->CreateCheckboxDesc(desc);
+        CheckboxDesc *chkboxdesc = ckboxGroup->CreateCheckboxDesc(desc);
+        chkboxdesc->checkBox_->SetColor(Color(0.9f, 0.4f, 0.1f));
     }
 
     ckboxGroup->SetEnabled(true);
