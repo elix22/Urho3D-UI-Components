@@ -74,25 +74,13 @@ bool SliderVariable::CreateBar(const IntVector2 &size)
 
 void SliderVariable::SetRange(Variant &vmin, Variant &vmax)
 {
-    float minVal, maxVal;
-    varMin_ = vmin;
-    varMax_ = vmax;
-
-    switch (vmin.GetType())
+    if (vmin.GetType() != VAR_INT && vmin.GetType() != VAR_FLOAT)
     {
-    case VAR_INT:
-        minVal = (float)vmin.GetInt();
-        maxVal = (float)vmax.GetInt();
-        break;
-
-    case VAR_FLOAT:
-        minVal = vmin.GetFloat();
-        maxVal = vmax.GetFloat();
-        break;
-
-    default:
         assert(false && "only INT and FLOAT are implemented, implement what you need");
     }
+
+    varMin_ = vmin;
+    varMax_ = vmax;
 }
 
 void SliderVariable::SetCurrentValue(Variant &val)
@@ -116,46 +104,21 @@ void SliderVariable::SetCurrentValue(Variant &val)
 
 void SliderVariable::ValueUpdate(float delta)
 {
-    int ival;
-    float fval;
-
-    switch (varMax_.GetType())
+    if (varMax_.GetType() == VAR_INT)
     {
-    case VAR_INT:
-        ival = varCurrentValue_.GetInt() + (int)(delta * sensitivity_);
-
-        if ( ival < varMin_.GetInt() )
-        {
-            varCurrentValue_ = varMin_;
-        }
-        else if ( ival > varMax_.GetInt())
-        {
-            varCurrentValue_ = varMax_;
-        }
-        else
-        {
-            varCurrentValue_ = ival;
-        }
+        varCurrentValue_ = Clamp(varCurrentValue_.GetInt() + (int)(delta * sensitivity_), varMin_.GetInt(), varMax_.GetInt());
         variableText_->SetText( String(varCurrentValue_.GetInt()) );
-        break;
-
-    case VAR_FLOAT:
-        fval = varCurrentValue_.GetFloat() + delta * sensitivity_;
-
-        if (fval < varMin_.GetFloat())
-        {
-            varCurrentValue_ = varMin_;
-        }
-        else if (fval > varMax_.GetFloat())
-        {
-            varCurrentValue_ = varMax_;
-        }
-        else
-        {
-            varCurrentValue_ = fval;
-        }
+    }
+    else //(varMax_.GetType() == VAR_FLOAT)
+    {
+        varCurrentValue_ = Clamp(varCurrentValue_.GetFloat() + delta * sensitivity_, varMin_.GetFloat(), varMax_.GetFloat());
         variableText_->SetText( String(varCurrentValue_.GetFloat()) );
-        break;
+    }
+
+    // listener callback
+    if (processCaller && pfnValChangedCallback)
+    {
+        (processCaller->*pfnValChangedCallback)(varCurrentValue_);
     }
 }
 
@@ -268,25 +231,13 @@ void SlideBar::SetEnabled(bool enable)
 
 void SlideBar::SetRange(Variant &vmin, Variant &vmax)
 {
-    float minVal, maxVal;
-    varMin_ = vmin;
-    varMax_ = vmax;
-
-    switch (vmin.GetType())
+    if (vmin.GetType() != VAR_INT && vmin.GetType() != VAR_FLOAT)
     {
-    case VAR_INT:
-        minVal = (float)vmin.GetInt();
-        maxVal = (float)vmax.GetInt();
-        break;
-
-    case VAR_FLOAT:
-        minVal = vmin.GetFloat();
-        maxVal = vmax.GetFloat();
-        break;
-
-    default:
         assert(false && "only INT and FLOAT are implemented, implement what you need");
     }
+
+    varMin_ = vmin;
+    varMax_ = vmax;
 }
 
 void SlideBar::SetCurrentValue(Variant &val)
@@ -310,48 +261,18 @@ void SlideBar::SetCurrentValue(Variant &val)
 
 void SlideBar::ValueUpdate(float delta)
 {
-    int ival;
-    float fval;
-
-    switch (varMax_.GetType())
+    if (varMax_.GetType() == VAR_INT)
     {
-    case VAR_INT:
-        ival = varCurrentValue_.GetInt() + (int)(delta * sensitivity_);
-
-        if ( ival < varMin_.GetInt() )
-        {
-            varCurrentValue_ = varMin_;
-        }
-        else if ( ival > varMax_.GetInt())
-        {
-            varCurrentValue_ = varMax_;
-        }
-        else
-        {
-            varCurrentValue_ = ival;
-        }
+        varCurrentValue_ = Clamp(varCurrentValue_.GetInt() + (int)(delta * sensitivity_), varMin_.GetInt(), varMax_.GetInt());
         variableText_->SetText( String(varCurrentValue_.GetInt()) );
-        break;
-
-    case VAR_FLOAT:
-        fval = varCurrentValue_.GetFloat() + delta * sensitivity_;
-
-        if (fval < varMin_.GetFloat())
-        {
-            varCurrentValue_ = varMin_;
-        }
-        else if (fval > varMax_.GetFloat())
-        {
-            varCurrentValue_ = varMax_;
-        }
-        else
-        {
-            varCurrentValue_ = fval;
-        }
+    }
+    else //(varMax_.GetType() == VAR_FLOAT)
+    {
+        varCurrentValue_ = Clamp(varCurrentValue_.GetFloat() + delta * sensitivity_, varMin_.GetFloat(), varMax_.GetFloat());
         variableText_->SetText( String(varCurrentValue_.GetFloat()) );
-        break;
     }
 
+    // listener callback
     if (processCaller && pfnValChangedCallback)
     {
         (processCaller->*pfnValChangedCallback)(varCurrentValue_);

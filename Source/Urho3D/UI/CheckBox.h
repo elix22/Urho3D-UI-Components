@@ -50,7 +50,8 @@ public:
 
     /// Set checked state.
     void SetChecked(bool enable);
-    void SetCheckedInternal(bool enable){ checked_ = enable;}
+    /// Set checked state without generating an event.
+    void SetCheckedInternal(bool enable){ checked_ = enable; }
     /// Set checked image offset.
     void SetCheckedOffset(const IntVector2& rect);
     /// Set checked image offset.

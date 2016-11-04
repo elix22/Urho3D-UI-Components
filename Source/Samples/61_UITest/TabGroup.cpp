@@ -158,12 +158,11 @@ void TabGroup::HandleTabToggled(StringHash eventType, VariantMap& eventData)
     {
         CheckBox *chkbox = childList_[i].tabButton_;
 
-        if (chkbox == element)
+        if (chkbox == element && !chkbox->IsChecked())
             checkedIdx = i;
 
-        childList_[i].tabBody_->SetVisible(chkbox == element);
-
         chkbox->SetCheckedInternal(chkbox == element);
+        childList_[i].tabBody_->SetVisible(chkbox == element);
     }
 
     if (checkedIdx >= 0)

@@ -86,7 +86,7 @@ void Main::Start()
         GetSubsystem<Input>()->SetMouseVisible(true);
 
     // change background color
-    colorBackground_ = Color(0.3f, 0.3f, 0.9f);
+    colorBackground_ = Color(0.1f, 0.3f, 0.9f);
     GetSubsystem<Renderer>()->GetDefaultZone()->SetFogColor(colorBackground_);
 
     // Create the UI content
@@ -121,7 +121,7 @@ void Main::CreateCheckboxGroup()
     CheckBoxGroup *ckboxGroup = root->CreateChild<CheckBoxGroup>();
     ckboxGroup->SetPosition(20, 50);
     ckboxGroup->SetSize(300, 300);
-    ckboxGroup->SetColor(Color(0.2f,0.2f,0.2f));
+    ckboxGroup->SetColor(Color(1.0f, 0.66f, 0.0f));
 
     for (int i = 0; i < 4; ++i)
     {
@@ -246,7 +246,7 @@ void Main::CreateSliderVariable()
     UI* ui = GetSubsystem<UI>();
     UIElement* root = ui->GetRoot();
 
-    // ui callback helper 
+    // ui callback helper - a direct and alternative method to get events
     // you can use a typical event handler instead, e.g. HandleMessage(StringHash eventType, VariantMap& eventData);
     // and write the event sender in SlideBar
     class UICallbackHelper : public UIElement
@@ -286,7 +286,7 @@ void Main::CreateSliderVariable()
     //slideBar->GetHeaderElement()->SetVisible(false);
 
     slideBar->SetRange((Variant)0.0f, (Variant)1.0f);
-    slideBar->SetCurrentValue((Variant)0.0f );
+    slideBar->SetCurrentValue((Variant)colorBackground_.r_ );
     slideBar->SetSensitivity(0.005f);
     slideBar->SetEnabled(true);
 
