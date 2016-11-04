@@ -60,7 +60,6 @@ public:
     virtual ~LineBatcher();
 
     void SetConstrainingParent(UIElement *contrainingParent) { constrainParentElement_ = contrainingParent; }
-    void SetConstrainedToParent(bool constrained) { parentConstrain_ = constrained; }
 
     void SetLineTexture(Texture* texture);
     void SetLineRect(const IntRect& rect)   { lineImageRect_ = rect; }
@@ -78,7 +77,7 @@ public:
     void DrawPoints(PODVector<IntVector2> &points);
     void ClearPointList();
     void ClearBatchList();
-    int GetBatchCount() { return (int)batches_.Size(); }
+    int GetBatchCount() const { return (int)batches_.Size(); }
 
     // virtual override
     virtual void GetBatches(PODVector<UIBatch>& batches, PODVector<float>& vertexData, const IntRect& currentScissor);
@@ -87,26 +86,19 @@ protected:
     void CreateLineSegments();
     void CreateCurveSegments();
     void StitchQuadPoints();
-    void RectPointsToQuads(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
+    void LinePointsToQuadsPoints(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
     bool ValidateTextures() const;
-    void ClearData();
-    void ClearBatches();
     void AddQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
     void AddCrossQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
-    void HandleDragMove(StringHash eventType, VariantMap& eventData);
-    void HandleDoubleClick(StringHash eventType, VariantMap& eventData);
-    void AjustLines(UIElement *element);
 
 protected:
     WeakPtr<UIElement>      constrainParentElement_;
-    SharedPtr<Texture>      lineTexture_;
 
-    BlendMode               blendMode_;
-    bool                    parentConstrain_;
-    bool                    buttonsToggledOn_;
+    SharedPtr<Texture>      lineTexture_;
     IntRect                 lineImageRect_;
     float                   linePixelSize_;
     float                   lineOpacity_;
+    BlendMode               blendMode_;
 
     Vector<IntVector2>      pointList_;
     LineType                lineType_;

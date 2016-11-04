@@ -84,7 +84,6 @@ bool DrawAreaBatcher::CreateLineBatcher(Texture2D *tex2d, const IntRect &rect)
     lineBatcher_->SetLinePixelSize(2.0f);
     lineBatcher_->SetColor(Color::RED);
     lineBatcher_->SetNumPointsPerSegment(0);
-    lineBatcher_->SetConstrainedToParent(true);
 
     return true;
 }

@@ -30,11 +30,10 @@ class Text;
 }
 
 using namespace Urho3D;
-
-typedef void (UIElement::*ValChangedCallback)(Variant &var);
-
 //=============================================================================
 //=============================================================================
+typedef void (UIElement::*VarChangedCallback)(Variant &var);
+
 class SliderVariable : public BorderImage
 {
     URHO3D_OBJECT(SliderVariable, BorderImage);
@@ -54,10 +53,10 @@ public:
     void SetCurrentValue(Variant &val);
     void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
 
-    void SetValChangedCallback(UIElement *process, ValChangedCallback callback)
+    void SetVarChangedCallback(UIElement *process, VarChangedCallback callback)
     {
         processCaller = process;
-        pfnValChangedCallback = callback;
+        pfnVarChangedCallback = callback;
     }
 
 protected:
@@ -66,7 +65,7 @@ protected:
 protected:
     WeakPtr<Text>       variableText_;
     UIElement           *processCaller;
-    ValChangedCallback  pfnValChangedCallback;
+    VarChangedCallback  pfnVarChangedCallback;
 
     Variant             varMin_;
     Variant             varMax_;
@@ -100,10 +99,10 @@ public:
     void SetCurrentValue(Variant &val);
     void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
 
-    void SetValChangedCallback(UIElement *process, ValChangedCallback callback)
+    void SetVarChangedCallback(UIElement *process, VarChangedCallback callback)
     {
         processCaller = process;
-        pfnValChangedCallback = callback;
+        pfnVarChangedCallback = callback;
     }
 
 protected:
@@ -113,7 +112,7 @@ protected:
 
 protected:
     UIElement           *processCaller;
-    ValChangedCallback  pfnValChangedCallback;
+    VarChangedCallback  pfnVarChangedCallback;
 
     WeakPtr<UIElement>     headerElement_;
     WeakPtr<BorderImage>   sliderElement_;

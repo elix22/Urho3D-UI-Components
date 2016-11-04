@@ -291,7 +291,7 @@ void Main::CreateSliderVariable()
     slideBar->SetEnabled(true);
 
     // assign callback
-    slideBar->SetValChangedCallback(colorChangedHelper, (ValChangedCallback)&UICallbackHelper::RedColorHandler);
+    slideBar->SetVarChangedCallback(colorChangedHelper, (VarChangedCallback)&UICallbackHelper::RedColorHandler);
 }
 
 void Main::CreateDrawTool()

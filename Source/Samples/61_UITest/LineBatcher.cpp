@@ -66,8 +66,6 @@ LineBatcher::LineBatcher(Context *context)
     , numPtsPerSegment_(0)
     , invLineTextureWidth_(1)
     , invLineTextureHeight_(1)
-    , buttonsToggledOn_(true)
-    , parentConstrain_(false)
 {
     SetSize(1, 1);
 }
@@ -83,11 +81,9 @@ void LineBatcher::SetLineType(LineType lineType)
 
 void LineBatcher::SetLineData(Texture* texture, const IntRect& rect)
 {
-    lineTexture_ = texture;
     lineImageRect_ = rect;
 
-    invLineTextureWidth_  = 1.0f/(float)lineTexture_->GetWidth();
-    invLineTextureHeight_ = 1.0f/(float)lineTexture_->GetHeight();   
+    SetLineTexture(texture);
 }
 
 void LineBatcher::SetLineTexture(Texture* texture)
@@ -141,23 +137,23 @@ void LineBatcher::ClearPointList()
 
 void LineBatcher::ClearBatchList()
 {
-    ClearBatches();
+    vertexData_.Clear();
+    batches_.Clear();
 }
 
 void LineBatcher::CreateLineSegments()
 {
     Vector2 v0, v1;
     Vector2 a, b, c, d;
-    Vector2 t0, t1;
 
-    v0 = Vector2((float)pointList_[0].x_, (float)pointList_[0].y_);
     rectVectorList_.Clear();
+    v0 = Vector2((float)pointList_[0].x_, (float)pointList_[0].y_);
 
     for ( int i = 1; i < (int)pointList_.Size(); ++i )
     {
         v1 = Vector2((float)pointList_[i].x_, (float)pointList_[i].y_);
 
-        RectPointsToQuads(v0, v1, a, b, c, d);
+        LinePointsToQuadsPoints(v0, v1, a, b, c, d);
         rectVectorList_.Push(RectVectors(a, b, c, d));
         v0 = v1;
     }
@@ -179,17 +175,17 @@ void LineBatcher::CreateCurveSegments()
     // line segment
     Vector2 v0, v1;
     Vector2 a, b, c, d;
-    Vector2 t0, t1;
-
-    v0 = Vector2((float)pointList_[0].x_, (float)pointList_[0].y_);
     int numSegs = numPtsPerSegment_ * (int)pointList_.Size();
     float invSegs = 1.0f/(float)numSegs;
+
+    rectVectorList_.Clear();
+    v0 = Vector2((float)pointList_[0].x_, (float)pointList_[0].y_);
 
     for ( int i = 1; i < numSegs + 1; ++i )
     {
         v1 = spl.GetPoint( (float)i * invSegs ).GetVector2();
 
-        RectPointsToQuads(v0, v1, a, b, c, d);
+        LinePointsToQuadsPoints(v0, v1, a, b, c, d);
         rectVectorList_.Push(RectVectors(a, b, c, d));
         v0 = v1;
     }
@@ -197,13 +193,13 @@ void LineBatcher::CreateCurveSegments()
     StitchQuadPoints();
 }
 
-void LineBatcher::RectPointsToQuads(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
+void LineBatcher::LinePointsToQuadsPoints(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
 {
-    Vector3 vv0(v0.x_, v0.y_, 0);
-    Vector3 vv1(v1.x_, v1.y_, 0);
+    Vector3 p0(v0.x_, v0.y_, 0);
+    Vector3 p1(v1.x_, v1.y_, 0);
     Vector3 zn(0,0,1);
-    Vector3 delta = (vv1 - vv0).Normalized();
-    zn = zn.CrossProduct(delta).Normalized();
+    Vector3 line = (p1 - p0).Normalized();
+    zn = zn.CrossProduct(line).Normalized();
     zn = zn * linePixelSize_;
     Vector2 n(zn.x_, zn.y_);
     a = v0 - n; 
@@ -244,7 +240,6 @@ void LineBatcher::StitchQuadPoints()
     // add the last quad
     numRects--;
     AddQuad(rectVectorList_[numRects].a, rectVectorList_[numRects].b, rectVectorList_[numRects].c, rectVectorList_[numRects].d );
-
 }
 
 bool LineBatcher::ValidateTextures() const
@@ -255,20 +250,6 @@ bool LineBatcher::ValidateTextures() const
     }
 
     return true;
-}
-
-void LineBatcher::ClearData()
-{
-    pointList_.Clear();
-
-    ClearBatches();
-}
-
-void LineBatcher::ClearBatches()
-{
-    vertexData_.Clear();
-    batches_.Clear();
-    rectVectorList_.Clear();
 }
 
 void LineBatcher::GetBatches(PODVector<UIBatch>& batches, PODVector<float>& vertexData, const IntRect& currentScissor)
@@ -455,78 +436,6 @@ void LineBatcher::AddCrossQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
     }
 
     UIBatch::AddOrMerge( batch, batches_ );
-}
-
-void LineBatcher::AjustLines(UIElement *element)
-{
-#if 0
-    IntVector2 halfBtnSize = dragboxSize_;
-    halfBtnSize.x_ /= 2;
-    halfBtnSize.y_ /= 2;
-
-    for (unsigned i = 0; i < buttonList_.Size(); ++i)
-    {
-        if (buttonList_[i] == element)
-        {
-            if (parentConstrain_)
-            {
-                pointList_[i] = GetParent()->GetPosition() + element->GetPosition() + halfBtnSize;
-            }
-            else
-            {
-                pointList_[i] = element->GetPosition() + halfBtnSize;
-            }
-        }
-    }
-
-    ClearBatches();
-
-    if (lineType_ == STRAIGHT_LINE)
-        CreateLineSegments();
-    else
-        CreateCurveSegments();
-#endif
-}
-
-void LineBatcher::HandleDragMove(StringHash eventType, VariantMap& eventData)
-{
-#if 0
-    using namespace DragMove;
-    Button* element = (Button*)eventData[P_ELEMENT].GetVoidPtr();
-    int buttons = eventData[P_BUTTONS].GetInt();
-    IntVector2 d = element->GetVar("DELTA").GetIntVector2();
-    int X = eventData[P_X].GetInt() + d.x_;
-    int Y = eventData[P_Y].GetInt() + d.y_;
-    int BUTTONS = element->GetVar("BUTTONS").GetInt();
-
-    if (parentConstrain_ && GetParent())
-    {
-        IntVector2 newPos(X, Y);
-        IntVector2 pPos(GetParent()->GetPosition());
-        IntVector2 pSize(GetParent()->GetSize());
-        if ( newPos.x_ > pPos.x_ && newPos.x_ < pPos.x_ + pSize.x_ - element->GetSize().x_ && 
-             newPos.y_ > pPos.y_ && newPos.y_ < pPos.y_ + pSize.y_ - element->GetSize().y_ )
-        {
-            element->SetPosition( newPos - pPos );
-        }
-    }
-    else if (!parentConstrain_)
-    {
-        element->SetPosition(IntVector2(X, Y));
-    }
-    else
-    {
-        element->SetPosition(IntVector2(X, Y));
-    }
-
-    // line segments
-    AjustLines(element);
-#endif
-}
-
-void LineBatcher::HandleDoubleClick(StringHash eventType, VariantMap& eventData)
-{
-    //SetDragBoxVisible(buttonsToggledOn_);
 }
 
 

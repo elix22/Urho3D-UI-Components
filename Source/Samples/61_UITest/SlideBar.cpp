@@ -47,7 +47,7 @@ void SliderVariable::RegisterObject(Context* context)
 SliderVariable::SliderVariable(Context *context)
     : BorderImage(context)
     , processCaller(NULL)
-    , pfnValChangedCallback(NULL)
+    , pfnVarChangedCallback(NULL)
     , sensitivity_(0.1f)
 {
 }
@@ -74,7 +74,9 @@ bool SliderVariable::CreateBar(const IntVector2 &size)
 
 void SliderVariable::SetRange(Variant &vmin, Variant &vmax)
 {
-    if (vmin.GetType() != VAR_INT && vmin.GetType() != VAR_FLOAT)
+    if (!(vmin.GetType() == VAR_INT || vmin.GetType() == VAR_FLOAT) ||
+        !(vmax.GetType() == VAR_INT || vmax.GetType() == VAR_FLOAT) ||
+         vmin.GetType() != vmax.GetType())
     {
         assert(false && "only INT and FLOAT are implemented, implement what you need");
     }
@@ -116,9 +118,9 @@ void SliderVariable::ValueUpdate(float delta)
     }
 
     // listener callback
-    if (processCaller && pfnValChangedCallback)
+    if (processCaller && pfnVarChangedCallback)
     {
-        (processCaller->*pfnValChangedCallback)(varCurrentValue_);
+        (processCaller->*pfnVarChangedCallback)(varCurrentValue_);
     }
 }
 
@@ -138,7 +140,7 @@ void SlideBar::RegisterObject(Context* context)
 SlideBar::SlideBar(Context *context)
     : BorderImage(context)
     , processCaller(NULL)
-    , pfnValChangedCallback(NULL)
+    , pfnVarChangedCallback(NULL)
     , storedSize_(IntVector2::ZERO)
     , sensitivity_(0.1f)
 {
@@ -231,7 +233,9 @@ void SlideBar::SetEnabled(bool enable)
 
 void SlideBar::SetRange(Variant &vmin, Variant &vmax)
 {
-    if (vmin.GetType() != VAR_INT && vmin.GetType() != VAR_FLOAT)
+    if (!(vmin.GetType() == VAR_INT || vmin.GetType() == VAR_FLOAT) ||
+        !(vmax.GetType() == VAR_INT || vmax.GetType() == VAR_FLOAT) ||
+         vmin.GetType() != vmax.GetType())
     {
         assert(false && "only INT and FLOAT are implemented, implement what you need");
     }
@@ -273,9 +277,9 @@ void SlideBar::ValueUpdate(float delta)
     }
 
     // listener callback
-    if (processCaller && pfnValChangedCallback)
+    if (processCaller && pfnVarChangedCallback)
     {
-        (processCaller->*pfnValChangedCallback)(varCurrentValue_);
+        (processCaller->*pfnVarChangedCallback)(varCurrentValue_);
     }
 }
 
