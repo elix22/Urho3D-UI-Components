@@ -59,7 +59,13 @@ public:
     LineBatcher(Context *context);
     virtual ~LineBatcher();
 
+    static IntRect& GetBoxRect()    { return boxRect_; }
+    static IntVector2& GetBoxSize() { return boxSize_; }
+
     void SetConstrainingParent(UIElement *contrainingParent) { constrainParentElement_ = contrainingParent; }
+
+    void SetColor(const Color& color);
+    void SetColor(Corner corner, const Color& color);
 
     void SetLineTexture(Texture* texture);
     void SetLineRect(const IntRect& rect)   { lineImageRect_ = rect; }
@@ -73,8 +79,8 @@ public:
 
     void SetNumPointsPerSegment(int numPtsPerSegment) { numPtsPerSegment_ = numPtsPerSegment; }
     void AddPoint(const IntVector2& pt);
-    void AddPoints(PODVector<IntVector2> &points);
-    void DrawPoints(PODVector<IntVector2> &points);
+    void AddPoints(const PODVector<IntVector2> &points);
+    void DrawPoints(const PODVector<IntVector2> &points);
     void ClearPointList();
     void ClearBatchList();
     int GetBatchCount() const { return (int)batches_.Size(); }
@@ -83,15 +89,20 @@ public:
     virtual void GetBatches(PODVector<UIBatch>& batches, PODVector<float>& vertexData, const IntRect& currentScissor);
 
 protected:
+    void DrawInternalPoints();
+
     void CreateLineSegments();
     void CreateCurveSegments();
     void StitchQuadPoints();
-    void LinePointsToQuadsPoints(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
+    void LinePointsToQuadPoints(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
     bool ValidateTextures() const;
-    void AddQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
-    void AddCrossQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d);
+    void AddQuad(const Vector2 &a, const Vector2 &b, const Vector2 &c, const Vector2 &d);
+    void AddCrossQuad(const Vector2 &a, const Vector2 &b, const Vector2 &c, const Vector2 &d);
 
 protected:
+    static IntRect          boxRect_;
+    static IntVector2       boxSize_;
+
     WeakPtr<UIElement>      constrainParentElement_;
 
     SharedPtr<Texture>      lineTexture_;

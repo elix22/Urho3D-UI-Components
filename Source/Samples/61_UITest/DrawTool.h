@@ -107,7 +107,6 @@ public:
     virtual ~DrawAreaTexure();
 
     bool Create(const IntVector2 &size);
-
     virtual void OnDragBegin(const IntVector2& position, const IntVector2& screenPosition, 
                              int buttons, int qualifiers, Cursor* cursor);
 
@@ -145,6 +144,7 @@ public:
     bool SetHeaderFont(const String& fontName, int size = DEFAULT_FONT_SIZE);
     bool SetHeaderFont(Font* font, int size = DEFAULT_FONT_SIZE);
     void SetHeaderText(const String& text);
+    void SetScreenColor(const Color &color);
 
 protected:
     bool InitInternal(const IntVector2 &size);
@@ -158,7 +158,9 @@ protected:
     WeakPtr<DrawAreaBatcher> drawArea_;
     WeakPtr<DrawAreaTexure>  drawAreaTexture_;
 
-    IntRect borderRect_;
-    bool  useLineBatcher_;
+    IntRect                  borderRect_;
+    bool                     useLineBatcher_;
+    Color                    colorScreen_;
+
 };
 

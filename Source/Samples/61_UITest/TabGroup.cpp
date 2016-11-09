@@ -42,8 +42,18 @@ void TabGroup::RegisterObject(Context* context)
 
 TabGroup::TabGroup(Context *context) : BorderImage(context)
 {
+    // default settings
     SetLayoutMode(LM_VERTICAL);
     SetLayoutSpacing(0);
+    SetClipChildren(true);
+
+    // tab header - buttons container
+    headerElement_ = CreateChild<UIElement>();
+    headerElement_->SetLayoutMode(LM_HORIZONTAL);
+    headerElement_->SetLayoutSpacing(2);
+
+    // tab body
+    bodyElement_ = CreateChild<UIElement>();
 }
 
 TabGroup::~TabGroup()
@@ -51,40 +61,19 @@ TabGroup::~TabGroup()
     childList_.Clear();
 }
 
-void TabGroup::InitInternal(const IntVector2 &tabSize, const IntVector2 &bodySize)
-{
-    if (tabContainer_ == NULL && bodyContainer_ == NULL)
-    {
-        // default settings
-        SetLayoutMode(LM_VERTICAL);
-        SetLayoutSpacing(0);
-        SetClipChildren(true);
-
-        tabContainer_ = CreateChild<UIElement>();
-        tabContainer_->SetLayoutMode(LM_HORIZONTAL);
-        tabContainer_->SetLayoutSpacing(2);
-        tabContainer_->SetMaxHeight(tabSize.y_);
-
-        bodyContainer_ = CreateChild<UIElement>();
-    }
-}
-
 TabElement* TabGroup::CreateTab(const IntVector2 &tabSize, const IntVector2 &bodySize)
 {
     ResourceCache* cache = GetSubsystem<ResourceCache>();
     TabElement tabElement;
 
-    // init containers
-    InitInternal(tabSize, bodySize);
+    headerElement_->SetMaxHeight(tabSize.y_);
 
     // button
-    tabElement.tabButton_ = new CheckBox(context_);
-    tabContainer_->AddChild(tabElement.tabButton_);
+    tabElement.tabButton_ = headerElement_->CreateChild<CheckBox>();
 
     tabElement.tabButton_->SetDefaultStyle(cache->GetResource<XMLFile>("UI/DefaultStyle.xml"));
     tabElement.tabButton_->SetStyle("TabButton");
 
-    // setting the style doesn't seem to take(bug?) - manually set image rect and checked offset
     tabElement.tabButton_->SetImageRect(IntRect(208, 64, 224, 80));
     tabElement.tabButton_->SetCheckedOffset(IntVector2(0,16));
 
@@ -95,15 +84,13 @@ TabElement* TabGroup::CreateTab(const IntVector2 &tabSize, const IntVector2 &bod
     tabElement.tabText_->SetAlignment(HA_CENTER, VA_CENTER);
 
     // body
-    tabElement.tabBody_ = new BorderImage(context_);
-    bodyContainer_->AddChild(tabElement.tabBody_);
+    tabElement.tabBody_ = bodyElement_->CreateChild<BorderImage>();
 
     tabElement.tabBody_->SetStyle("TabBody");
     tabElement.tabBody_->SetImageRect(IntRect(192, 80, 208, 96));
     tabElement.tabBody_->SetSize(bodySize);
     tabElement.tabBody_->SetVisible(childList_.Size() == 0);
 
-    UIElement::SetSize(internalSize_);
     childList_.Push(tabElement);
 
     return &childList_.Back();
@@ -133,17 +120,6 @@ void TabGroup::SetEnabled(bool enabled)
         }
 
     }
-}
-
-void TabGroup::SetSize(int width, int height)
-{
-    SetSize(IntVector2(width, height));
-}
-
-void TabGroup::SetSize(const IntVector2& size)
-{
-    internalSize_ = size;
-    UIElement::SetSize(internalSize_);
 }
 
 void TabGroup::HandleTabToggled(StringHash eventType, VariantMap& eventData)

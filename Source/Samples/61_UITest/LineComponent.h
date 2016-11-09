@@ -40,81 +40,56 @@ class LineBatcher;
 
 //=============================================================================
 //=============================================================================
-enum IOType
+class StaticLine : public UIElement
 {
-    IO_Input,
-    IO_Output,
-};
-
-class ConnectorLine : public BorderImage
-{
-    URHO3D_OBJECT(ConnectorLine, BorderImage);
-
-    // connection curve only requires 5 points
-    enum PointSizeType{ MAX_POINTS = 5 };
+    URHO3D_OBJECT(StaticLine, UIElement);
 public:
     static void RegisterObject(Context* context);
 
-    ConnectorLine(Context *context);
-    virtual ~ConnectorLine();
+    StaticLine(Context *context);
+    virtual ~StaticLine();
 
-    static IntRect& GetBoxRect()    { return boxRect_; }
-    static IntVector2& GetBoxSize() { return boxSize_; }
-
-    void SetParent(UIElement *uiparent) { parentNode_ = uiparent; }
-    bool Create(Texture2D *tex2d, const IntRect &rect);
-
-    BorderImage* GetTailImage(){ return tailBorderImage_; }
-    void SetEnabled(bool enabled);
-    void SetPosition(int x, int y);
-    void SetPosition(const IntVector2& pos);
-    void SetTailPosition(const IntVector2& pos);
-
-    virtual void OnDragBegin(const IntVector2& position, const IntVector2& screenPosition, 
-                             int buttons, int qualifiers, Cursor* cursor);
-    virtual void OnDragMove(const IntVector2& position, const IntVector2& screenPosition, 
-                            const IntVector2& deltaPos, int buttons, int qualifiers, Cursor* cursor);
-
-protected:
-    void InitInternal();
-    void HandleParentLayoutUpdated(StringHash eventType, VariantMap& eventData);
-
-protected:
-    static IntRect          boxRect_;
-    static IntVector2       boxSize_;
-
-    WeakPtr<UIElement>      parentNode_;
-    WeakPtr<LineBatcher>    lineBatcher_;
-    IntVector2              parentPosOffset_;
-    IntVector2              rectSize_;
-    Color                   rectColor_;
-    WeakPtr<BorderImage>    tailBorderImage_;
-
-    PODVector<IntVector2>   pointList_;
-    int                     numPoints_;
-    IntVector2              dragBeginPos_;
-};
-
-//=============================================================================
-//=============================================================================
-class LineTest : public UIElement
-{
-    URHO3D_OBJECT(LineTest, UIElement);
-public:
-    static void RegisterObject(Context* context);
-
-    LineTest(Context *context);
-    virtual ~LineTest();
+    virtual bool CreateLine(const PODVector<IntVector2> &points, LineType linetype, const Color& color, float pixelSize);
     bool SetPoints(const PODVector<IntVector2> &points, LineType linetype, const Color& color, float pixelSize);
+    void SetUIRoot(UIElement *root) { uiRoot_ = root; }
+
+    void SetBlendMode(BlendMode mode);
+    BlendMode GetBlendMode() const { return blendMode_; }
+    void SetColor(const Color& color);
+    void SetColor(Corner corner, const Color& color);
+    void Redraw();
 
 protected:
     bool CreateLineBatcher(LineType linetype, const Color& color, float pixelSize);
+
+protected:
+    WeakPtr<UIElement>    uiRoot_;
+    WeakPtr<LineBatcher>  lineBatcher_;
+    PODVector<IntVector2> pointList_;
+    LineType              linetype_;
+    float                 pixelSize_;
+    BlendMode             blendMode_;
+};
+
+//=============================================================================
+//=============================================================================
+class ControlLine : public StaticLine
+{
+    URHO3D_OBJECT(ControlLine, StaticLine);
+public:
+    static void RegisterObject(Context* context);
+
+    ControlLine(Context *context);
+    virtual ~ControlLine();
+
+    virtual bool CreateLine(const PODVector<IntVector2> &points, LineType linetype, const Color& color, float pixelSize);
+    void SetEnableButtons(bool enable);
+    Vector<Button*>& GetButtonList() { return buttonList_; }
+
+protected:
     void HandleDragMove(StringHash eventType, VariantMap& eventData);
 
 protected:
-    WeakPtr<LineBatcher>  lineBatcher_;
-    PODVector<IntVector2> pointList_;
     Vector<Button*>       buttonList_;
-    LineType              linetype_;
-    float                 pixelSize_;
+    bool                  buttnsEnable_;
 };

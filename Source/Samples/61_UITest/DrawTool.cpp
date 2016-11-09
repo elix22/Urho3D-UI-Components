@@ -283,19 +283,6 @@ void DrawTool::RegisterObject(Context* context)
 DrawTool::DrawTool(Context *context) 
     : BorderImage(context)
 {
-}
-
-DrawTool::~DrawTool()
-{
-}
-
-bool DrawTool::InitInternal(const IntVector2 &size)
-{
-    if ( headerElement_ )
-    {
-        return false;
-    }
-
     SetLayoutMode(LM_VERTICAL);
     borderRect_ = IntRect(3,3,3,3);
     SetLayoutBorder(borderRect_);
@@ -307,13 +294,20 @@ bool DrawTool::InitInternal(const IntVector2 &size)
     headerElement_->SetMaxHeight(MIN_BAR_HEIGHT);
     headerElement_->SetLayoutBorder(IntRect(3,3,3,3));
     headerElement_->SetClipBorder(IntRect(3,3,3,3));
-    headerElement_->SetSize(size.x_, MIN_BAR_HEIGHT);
 
     headerText_ = headerElement_->CreateChild<Text>();
     headerText_->SetAlignment(HA_LEFT, VA_CENTER);
 
     batchCountText_ = headerElement_->CreateChild<Text>();
     batchCountText_->SetAlignment(HA_RIGHT, VA_CENTER);
+}
+
+DrawTool::~DrawTool()
+{
+}
+
+bool DrawTool::InitInternal(const IntVector2 &size)
+{
     return true;
 }
 
@@ -325,8 +319,7 @@ bool DrawTool::Create(const IntVector2 &size, Texture2D *tex2d, const IntRect &r
     if ( size.x_ < 200 || size.y_ < 200 )
         return false;
 
-    if ( !InitInternal( size ) )
-        return false;
+    headerElement_->SetSize(size.x_, MIN_BAR_HEIGHT);
 
     if ( !CreateDrawArea(size, tex2d, rect) )
         return false;
@@ -357,10 +350,18 @@ bool DrawTool::CreateDrawArea(const IntVector2 &size, Texture2D *tex2d, const In
     return true;
 }
 
+void DrawTool::SetScreenColor(const Color &color)
+{
+    colorScreen_ = color;
+
+    if ( useLineBatcher_ )
+    {
+        drawArea_->SetColor(colorScreen_);
+    }
+}
+
 void DrawTool::SetColor(const Color& color)
 {
-    assert(headerElement_ && "try calling Create() first");
-
     headerElement_->SetColor(color);
 
     UIElement::SetColor(color);
@@ -368,21 +369,18 @@ void DrawTool::SetColor(const Color& color)
 
 bool DrawTool::SetHeaderFont(const String& fontName, int size)
 {
-    assert(headerText_ && "try calling Create() first");
     batchCountText_->SetFont(fontName, size);
     return headerText_->SetFont(fontName, size);
 }
 
 bool DrawTool::SetHeaderFont(Font* font, int size)
 {
-    assert(headerText_ && "try calling Create() first");
     batchCountText_->SetFont(font, 10);
     return headerText_->SetFont(font, size);
 }
 
 void DrawTool::SetHeaderText(const String& text)
 {
-    assert(headerText_ && "try calling Create() first");
     headerText_->SetText(text);
 }
 

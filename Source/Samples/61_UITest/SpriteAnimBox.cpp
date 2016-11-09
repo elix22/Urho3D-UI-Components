@@ -50,61 +50,80 @@ SpriteAnimBox::SpriteAnimBox(Context *context)
     , frameMsec_(30)
     , paused_(true)
 {
+    SetLayoutMode(LM_VERTICAL);
+
+    headerElement_ = CreateChild<UIElement>();
+    headerElement_->SetMaxHeight(20);
+
+    headerText_ = headerElement_->CreateChild<Text>();
+    headerText_->SetHorizontalAlignment(HA_CENTER);
+
+    controlElement_ = CreateChild<UIElement>();
+    controlElement_->SetLayoutMode(LM_VERTICAL); //doesn't seem to matter if it's set as LM_HORIZONTAL
+    controlElement_->SetMaxHeight(50);
+
+    playButton_ = controlElement_->CreateChild<CheckBox>();
+    playButton_->SetHorizontalAlignment(HA_CENTER);
+
+    bodyElement_ = CreateChild<BorderImage>();
+    bodyElement_->SetHorizontalAlignment(HA_CENTER);
 }
 
 SpriteAnimBox::~SpriteAnimBox()
 {
 }
 
-void SpriteAnimBox::Init(IntVector2 &size, bool showHeader, bool showControl)
+void SpriteAnimBox::Create(IntVector2 &size, bool showHeader, bool showControl)
 {
-    ResourceCache* cache = GetSubsystem<ResourceCache>();
-
-    SetLayoutMode(LM_VERTICAL);
-
-    // setting parent's size first fails - set it at the bottom of this fn.
-    //SetSize(size);
-
-    headerElement_ = CreateChild<UIElement>();
-    headerElement_->SetMaxHeight(20);
     headerElement_->SetVisible(showHeader);
     headerElement_->SetWidth(size.x_);
 
-    headerText_ = headerElement_->CreateChild<Text>();
-    headerText_->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 12);
-    headerText_->SetText("SpriteAnimBox");
-    headerText_->SetHorizontalAlignment(HA_CENTER);
-
-    controlElement_ = CreateChild<UIElement>();
     controlElement_->SetWidth(size.x_);
-    controlElement_->SetMaxHeight(50);
     controlElement_->SetVisible(showControl);
-    controlElement_->SetLayoutMode(LM_VERTICAL); //doesn't seem to matter if it's set as LM_HORIZONTAL
 
-    playButton_ = controlElement_->CreateChild<CheckBox>();
-    playButton_->SetMaxSize(30,30);
-    playButton_->SetDefaultStyle(cache->GetResource<XMLFile>("UI/EditorIcons.xml"));
-    playButton_->SetStyle("RunUpdatePlay");
-    playButton_->SetCheckedOffset(IntVector2(32,0));
-    playButton_->SetHorizontalAlignment(HA_CENTER);
+    SetDefaultPlayButton();
 
-    bodyElement_ = CreateChild<BorderImage>();
-    bodyElement_->SetHorizontalAlignment(HA_CENTER);
-
-    // parent's size must be set last
     SetSize(size);
 }
 
 void SpriteAnimBox::ShowHeader(bool show)
 {
-    if (headerElement_)
-        headerElement_->SetVisible(show);
+    headerElement_->SetVisible(show);
 }
 
 void SpriteAnimBox::ShowControl(bool show)
 {
-    if (controlElement_)
-        controlElement_->SetVisible(show);
+    controlElement_->SetVisible(show);
+}
+
+void SpriteAnimBox::SetDefaultPlayButton()
+{
+    ResourceCache* cache = GetSubsystem<ResourceCache>();
+
+    playButton_->SetMaxSize(30,30);
+    playButton_->SetDefaultStyle(cache->GetResource<XMLFile>("UI/EditorIcons.xml"));
+    playButton_->SetStyle("RunUpdatePlay");
+    playButton_->SetCheckedOffset(IntVector2(32,0));
+}
+
+bool SpriteAnimBox::SetHeaderFont(const String& fontName, int size)
+{
+    return headerText_->SetFont(fontName, size);
+}
+
+bool SpriteAnimBox::SetHeaderFont(Font* font, int size)
+{
+    return headerText_->SetFont(font, size);
+}
+
+bool SpriteAnimBox::SetHeaderFontSize(int size)
+{
+    return headerText_->SetFontSize(size);
+}
+
+void SpriteAnimBox::SetHeaderText(const String& text)
+{
+    headerText_->SetText(text);
 }
 
 void SpriteAnimBox::AddSprite(const String& spriteFile)
@@ -120,13 +139,21 @@ void SpriteAnimBox::AddSprite(const String& spriteFile)
     }
 }
 
-void SpriteAnimBox::SetReady()
+void SpriteAnimBox::SetEnabled(bool enable)
 {
     elapsedTime_ = 0;
     spriteIndex_ = 0;
 
-    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(SpriteAnimBox, HandleUpdate));
-    SubscribeToEvent(playButton_, E_TOGGLED, URHO3D_HANDLER(SpriteAnimBox, HandleCheckbox));
+    if ( enable )
+    {
+        SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(SpriteAnimBox, HandleUpdate));
+        SubscribeToEvent(playButton_, E_TOGGLED, URHO3D_HANDLER(SpriteAnimBox, HandleCheckbox));
+    }
+    else
+    {
+        UnsubscribeFromEvent(E_UPDATE);
+        UnsubscribeFromEvent(playButton_, E_TOGGLED);
+    }
 }
 
 void SpriteAnimBox::Play()
@@ -142,7 +169,7 @@ void SpriteAnimBox::Pause()
 void SpriteAnimBox::Quit()
 {
     UnsubscribeFromEvent(E_UPDATE);
-    UnsubscribeFromEvent(E_TOGGLED);
+    UnsubscribeFromEvent(playButton_, E_TOGGLED);
 }
 
 void SpriteAnimBox::HandleUpdate(StringHash eventType, VariantMap& eventData)

@@ -40,6 +40,9 @@
 //=============================================================================
 #define DEFAULT_UI_RECT     16
 
+IntRect LineBatcher::boxRect_(84,87,85,88);
+IntVector2 LineBatcher::boxSize_(16, 16);
+
 //=============================================================================
 //=============================================================================
 void LineBatcher::RegisterObject(Context* context)
@@ -74,6 +77,39 @@ LineBatcher::~LineBatcher()
 {
 }
 
+void LineBatcher::SetBlendMode(BlendMode mode)
+{
+    blendMode_ = mode;
+
+    // redraw if we have a batch
+    if (batches_.Size() > 0 && pointList_.Size() > 0)
+    {
+        DrawInternalPoints();
+    }
+}
+
+void LineBatcher::SetColor(const Color& color)
+{
+    UIElement::SetColor(color);
+
+    // redraw if we have a batch
+    if (batches_.Size() > 0 && pointList_.Size() > 0)
+    {
+        DrawInternalPoints();
+    }
+}
+
+void LineBatcher::SetColor(Corner corner, const Color& color)
+{
+    UIElement::SetColor(corner, color);
+
+    // redraw if we have a batch
+    if (batches_.Size() > 0 && pointList_.Size() > 0)
+    {
+        DrawInternalPoints();
+    }
+}
+
 void LineBatcher::SetLineType(LineType lineType)
 {
     lineType_ = lineType;
@@ -94,17 +130,12 @@ void LineBatcher::SetLineTexture(Texture* texture)
     invLineTextureHeight_ = 1.0f/(float)lineTexture_->GetHeight();   
 }
 
-void LineBatcher::SetBlendMode(BlendMode mode)
-{
-    blendMode_ = mode;
-}
-
 void LineBatcher::AddPoint(const IntVector2& pt)
 {
     pointList_.Push(pt);
 }
 
-void LineBatcher::AddPoints(PODVector<IntVector2> &points)
+void LineBatcher::AddPoints(const PODVector<IntVector2> &points)
 {
     for ( unsigned i = 0; i < points.Size(); ++i )
     {
@@ -112,7 +143,7 @@ void LineBatcher::AddPoints(PODVector<IntVector2> &points)
     }
 }
 
-void LineBatcher::DrawPoints(PODVector<IntVector2> &points)
+void LineBatcher::DrawPoints(const PODVector<IntVector2> &points)
 {
     assert(points.Size() > 1 && "try adding more draw points");
 
@@ -122,6 +153,18 @@ void LineBatcher::DrawPoints(PODVector<IntVector2> &points)
 
     // add
     AddPoints(points);
+
+    // process
+    if ( lineType_ == STRAIGHT_LINE )
+        CreateLineSegments();
+    else
+        CreateCurveSegments();
+}
+
+void LineBatcher::DrawInternalPoints()
+{
+    // clear
+    ClearBatchList();
 
     // process
     if ( lineType_ == STRAIGHT_LINE )
@@ -153,7 +196,7 @@ void LineBatcher::CreateLineSegments()
     {
         v1 = Vector2((float)pointList_[i].x_, (float)pointList_[i].y_);
 
-        LinePointsToQuadsPoints(v0, v1, a, b, c, d);
+        LinePointsToQuadPoints(v0, v1, a, b, c, d);
         rectVectorList_.Push(RectVectors(a, b, c, d));
         v0 = v1;
     }
@@ -185,7 +228,7 @@ void LineBatcher::CreateCurveSegments()
     {
         v1 = spl.GetPoint( (float)i * invSegs ).GetVector2();
 
-        LinePointsToQuadsPoints(v0, v1, a, b, c, d);
+        LinePointsToQuadPoints(v0, v1, a, b, c, d);
         rectVectorList_.Push(RectVectors(a, b, c, d));
         v0 = v1;
     }
@@ -193,7 +236,7 @@ void LineBatcher::CreateCurveSegments()
     StitchQuadPoints();
 }
 
-void LineBatcher::LinePointsToQuadsPoints(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
+void LineBatcher::LinePointsToQuadPoints(const Vector2 &v0, const Vector2 &v1, Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
 {
     Vector3 p0(v0.x_, v0.y_, 0);
     Vector3 p1(v1.x_, v1.y_, 0);
@@ -273,7 +316,7 @@ void LineBatcher::GetBatches(PODVector<UIBatch>& batches, PODVector<float>& vert
     }
 }
 
-void LineBatcher::AddQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
+void LineBatcher::AddQuad(const Vector2 &a, const Vector2 &b, const Vector2 &c, const Vector2 &d)
 {
     struct VertexData
     {
@@ -315,7 +358,7 @@ void LineBatcher::AddQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
     ver[5].y = c.y_;
     ver[5].u = (float)lineImageRect_.left_ * invLineTextureWidth_;  
     ver[5].v = (float)lineImageRect_.bottom_ * invLineTextureHeight_;
-    ver[5].col = color_[C_BOTTOMRIGHT];
+    ver[5].col = color_[C_BOTTOMLEFT];
 
     // scissor min/max
     int minx =  M_MAX_INT, miny =  M_MAX_INT;
@@ -353,7 +396,7 @@ void LineBatcher::AddQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
     UIBatch::AddOrMerge( batch, batches_ );
 }
 
-void LineBatcher::AddCrossQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
+void LineBatcher::AddCrossQuad(const Vector2 &a, const Vector2 &b, const Vector2 &c, const Vector2 &d)
 {
     struct VertexData
     {
@@ -394,7 +437,7 @@ void LineBatcher::AddCrossQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
     ver[4].y = c.y_;
     ver[4].u = (float)lineImageRect_.left_ * invLineTextureWidth_;  
     ver[4].v = (float)lineImageRect_.bottom_ * invLineTextureHeight_;
-    ver[4].col = color_[C_BOTTOMRIGHT];
+    ver[4].col = color_[C_BOTTOMLEFT];
 
     ver[5].x = d.x_;
     ver[5].y = d.y_;
@@ -408,10 +451,17 @@ void LineBatcher::AddCrossQuad(Vector2 &a, Vector2 &b, Vector2 &c, Vector2 &d)
 
     for ( int i = 0; i < 6; ++i )
     {
-        if ((int)ver[i].x < minx ) minx = (int)ver[i].x;
-        if ((int)ver[i].x > maxx ) maxx = (int)ver[i].x;
-        if ((int)ver[i].y < miny ) miny = (int)ver[i].y;
-        if ((int)ver[i].y > maxy ) maxy = (int)ver[i].y;
+        #if 0
+        if ((int)(ver[i].x + 0.5f) < minx ) minx = (int)(ver[i].x + 0.5f);
+        if ((int)(ver[i].x + 0.5f) > maxx ) maxx = (int)(ver[i].x + 0.5f);
+        if ((int)(ver[i].y + 0.5f) < miny ) miny = (int)(ver[i].y + 0.5f);
+        if ((int)(ver[i].y + 0.5f) > maxy ) maxy = (int)(ver[i].y + 0.5f);
+        #else
+        if ((int)(ver[i].x) < minx ) minx = (int)(ver[i].x);
+        if ((int)(ver[i].x) > maxx ) maxx = (int)(ver[i].x);
+        if ((int)(ver[i].y) < miny ) miny = (int)(ver[i].y);
+        if ((int)(ver[i].y) > maxy ) maxy = (int)(ver[i].y);
+        #endif
     }
 
     IntRect scissor(minx, miny, maxx, maxy);

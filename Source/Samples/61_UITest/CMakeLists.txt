@@ -23,8 +23,10 @@
 # Define target name
 set (TARGET_NAME 61_UITest)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/NodeGraph )
+
 # Define source files
-define_source_files (EXTRA_H_FILES ${COMMON_SAMPLE_H_FILES})
+define_source_files (EXTRA_H_FILES ${COMMON_SAMPLE_H_FILES} RECURSE)
 
 # Setup target with resource copying
 setup_main_executable ()

@@ -49,14 +49,17 @@ public:
     virtual void Start();
 
 protected:
-    /// Construct the GUI.
+    /// Construct the GUI 
+    void CreatePageManager();
     void CreateGUI();
-    void CreateCheckboxGroup();
+    void CreateRadialGroup();
     void CreateTabGroup();
-    void CreateConnectorLine();
+    void CreateLineComponents();
     void CreateSpriteAnimBox();
-    void CreateSliderVariable();
     void CreateDrawTool();
+
+    void CreateSliderBarInput();
+    void CreateNodeGraph();
 
     /// Construct an instruction text to the UI.
     void CreateInstructions();
@@ -67,7 +70,7 @@ protected:
     void HandleTextFinished(StringHash eventType, VariantMap& eventData);
     void HandleLineEditDragBegin(StringHash eventType, VariantMap& eventData);
 
-    void HandleCheckboxSelected(StringHash eventType, VariantMap& eventData);
+    void HandleRadialGroupToggled(StringHash eventType, VariantMap& eventData);
     void HandleTabSelected(StringHash eventType, VariantMap& eventData);
 
 protected:

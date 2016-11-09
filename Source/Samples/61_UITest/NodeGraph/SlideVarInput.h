@@ -20,9 +20,8 @@
 // THE SOFTWARE.
 //
 #pragma once
-#include <Urho3D/UI/BorderImage.h>
 #include <Urho3D/Core/Variant.h>
-#include "LineComponent.h"
+#include "IOElement.h"
 
 namespace Urho3D
 {
@@ -32,100 +31,58 @@ class Text;
 using namespace Urho3D;
 //=============================================================================
 //=============================================================================
+URHO3D_EVENT(E_SLIDEBAR_VARCHANGED, SlideBarVarChanged)
+{
+    URHO3D_PARAM(P_ELEMENT, Element);  // UIElement pointer
+    URHO3D_PARAM(P_VALUE, var);      // variable
+}
+
+//=============================================================================
+//=============================================================================
 typedef void (UIElement::*VarChangedCallback)(Variant &var);
 
-class SliderVariable : public BorderImage
+class SlideVarInput : public IOElement
 {
-    URHO3D_OBJECT(SliderVariable, BorderImage);
+    URHO3D_OBJECT(SlideVarInput, IOElement);
 public:
-
     static void RegisterObject(Context* context);
 
-    SliderVariable(Context *context);
-    virtual ~SliderVariable();
-
-    bool CreateBar(const IntVector2 &size);
+    SlideVarInput(Context *context);
+    virtual ~SlideVarInput();
 
     virtual void OnDragMove(const IntVector2& position, const IntVector2& screenPosition, 
                             const IntVector2& deltaPos, int buttons, int qualifiers, Cursor* cursor);
 
-    void SetRange(Variant &vmin, Variant &vmax);
-    void SetCurrentValue(Variant &val);
-    void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
-
-    void SetVarChangedCallback(UIElement *process, VarChangedCallback callback)
-    {
-        processCaller = process;
-        pfnVarChangedCallback = callback;
-    }
-
-protected:
-    void ValueUpdate(float delta);
-
-protected:
-    WeakPtr<Text>       variableText_;
-    UIElement           *processCaller;
-    VarChangedCallback  pfnVarChangedCallback;
-
-    Variant             varMin_;
-    Variant             varMax_;
-    Variant             varCurrentValue_;
-    float               sensitivity_;
-};
-
-class SlideBar : public BorderImage
-{
-    URHO3D_OBJECT(SlideBar, BorderImage);
-public:
-    static void RegisterObject(Context* context);
-
-    SlideBar(Context *context);
-    virtual ~SlideBar();
-
-    virtual void OnDragMove(const IntVector2& position, const IntVector2& screenPosition, 
-                            const IntVector2& deltaPos, int buttons, int qualifiers, Cursor* cursor);
-
-    BorderImage* CreateBar(const IntVector2 &size);
-
-    UIElement* GetHeaderElement()   { return headerElement_;}
-    Text *GetHeaderText()           { return headerText_;    }
-
-    void SetSize(int width, int height);
-    void SetSize(const IntVector2& size);
-    void SetSliderColor(const Color& color);
-    void SetEnabled(bool enable);
+    bool CreateBar(const String &variableName, const IntVector2 &size);
 
     void SetRange(Variant &vmin, Variant &vmax);
     void SetCurrentValue(Variant &val);
     void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
+    void SetVarChangedCallback(UIElement *process, VarChangedCallback callback);
 
-    void SetVarChangedCallback(UIElement *process, VarChangedCallback callback)
-    {
-        processCaller = process;
-        pfnVarChangedCallback = callback;
-    }
+    const Variant& GetCurrentValue() { return varCurrentValue_; }
+
+    // related to slidevar input
+    virtual const Variant& GetRangeMin(const String &varName);
+    virtual const Variant& GetRangeMax(const String &varName);
+    virtual const Variant& GetCurrentValue(const String &varName);
 
 protected:
-    void InitInternal(const IntVector2 &size);
+    bool InitInternal();
     void ValueUpdate(float val);
-    void CreateOutputConnector();
 
 protected:
     UIElement           *processCaller;
     VarChangedCallback  pfnVarChangedCallback;
 
-    WeakPtr<UIElement>     headerElement_;
-    WeakPtr<BorderImage>   sliderElement_;
-    WeakPtr<ConnectorLine> outputConnector_;
-
-    WeakPtr<Text>          headerText_;
     WeakPtr<Text>          variableText_;
     Color                  internalColor_;
-    IntVector2             storedSize_;
                           
     Variant                varMin_;
     Variant                varMax_;
     Variant                varCurrentValue_;
+
+    float                  currentValue_;
     float                  sensitivity_;
 };
 

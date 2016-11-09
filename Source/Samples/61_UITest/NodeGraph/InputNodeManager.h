@@ -20,59 +20,25 @@
 // THE SOFTWARE.
 //
 #pragma once
-#include <Urho3D/UI/BorderImage.h>
-#include <Urho3D/UI/CheckBox.h>
-
-namespace Urho3D
-{
-extern const char* UI_CATEGORY;
-}
-using namespace Urho3D;
-//=============================================================================
-//=============================================================================
-/// group button released.
-URHO3D_EVENT(E_TABSELECTED, TabSelected)
-{
-    URHO3D_PARAM(P_ELEMENT, Element);              // UIElement pointer
-    URHO3D_PARAM(P_INDEX, Index);                  // int
-}
-
-struct TabElement
-{
-    WeakPtr<CheckBox>    tabButton_;
-    WeakPtr<Text>        tabText_;
-    WeakPtr<BorderImage> tabBody_;
-};
+#include "InputNode.h"
 
 //=============================================================================
 //=============================================================================
-class TabGroup : public BorderImage
+class InputNodeManager : public Object
 {
-    URHO3D_OBJECT(TabGroup, BorderImage);
+    URHO3D_OBJECT(InputNodeManager, Object);
 public:
     static void RegisterObject(Context* context);
 
-    TabGroup(Context *context);
-    virtual ~TabGroup();
+    InputNodeManager(Context *context);
+    virtual ~InputNodeManager();
 
-    TabElement* CreateTab(const IntVector2 &tabSize, const IntVector2 &bodySize);
-    TabElement* TabGroup::GetTabElement(unsigned idx);
-
-    void SetEnabled(bool enabled);
-
-    UIElement* GetHeaderElement() { return headerElement_; }
-    UIElement* GetBodyElement()   { return bodyElement_;   }
+    bool Add(InputBox *inputBox);
+    bool Remove(InputBox *inputBox);
+    bool GetNodesInside(Vector<InputBox*> &result, const Vector2 &pos, const Vector2 &size);
 
 protected:
-    void HandleTabToggled(StringHash eventType, VariantMap& eventData);
-    void SendTabSelectedEvent(int idx);
-
-protected:
-    WeakPtr<UIElement> headerElement_;
-    WeakPtr<UIElement> bodyElement_;
-
-    IntVector2         internalSize_; 
-    Vector<TabElement> childList_;
+	Vector<InputBox*> inputBoxList_;
 };
 
 

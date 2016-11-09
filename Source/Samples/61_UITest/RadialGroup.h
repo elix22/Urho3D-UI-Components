@@ -31,7 +31,7 @@ using namespace Urho3D;
 //=============================================================================
 //=============================================================================
 /// group checkbox toggled.
-URHO3D_EVENT(E_CHECKGROUPTOGGLED, CheckGroupToggled)
+URHO3D_EVENT(E_RADIALGROUPTOGGLED, RadialGroupToggled)
 {
     URHO3D_PARAM(P_ELEMENT, Element);              // UIElement pointer
     URHO3D_PARAM(P_INDEX, Index);                  // int
@@ -39,60 +39,63 @@ URHO3D_EVENT(E_CHECKGROUPTOGGLED, CheckGroupToggled)
 
 //=============================================================================
 //=============================================================================
-class CheckText : public Text
+class RadialText : public Text
 {
-    URHO3D_OBJECT(CheckText, Text);
+    URHO3D_OBJECT(RadialText, Text);
 public:
     static void RegisterObject(Context* context);
 
-    CheckText(Context *context) : Text(context){}
-    virtual ~CheckText(){}
+    RadialText(Context *context) : Text(context){}
+    virtual ~RadialText(){}
 
     virtual void OnClickBegin(const IntVector2& position, const IntVector2& screenPosition, 
                               int button, int buttons, int qualifiers, Cursor* cursor);
 
 };
 
-
-struct CheckboxDesc
+struct RadialElement
 {
-    WeakPtr<CheckBox>  checkBox_;
-    WeakPtr<CheckText> desc_;
-    WeakPtr<UIElement> element_;
+    WeakPtr<CheckBox>   checkbox_;
+    WeakPtr<RadialText> textDesc_;
+    WeakPtr<UIElement>  bodyElement_;
 };
 
 
-class CheckBoxGroup : public BorderImage
+class RadialGroup : public BorderImage
 {
-    URHO3D_OBJECT(CheckBoxGroup, BorderImage);
+    URHO3D_OBJECT(RadialGroup, BorderImage);
 public:
     static void RegisterObject(Context* context);
 
-    CheckBoxGroup(Context *context);
-    virtual ~CheckBoxGroup();
+    RadialGroup(Context *context);
+    virtual ~RadialGroup();
 
-    CheckboxDesc* CreateCheckboxDesc(const String& desc);
-    CheckboxDesc* GetCheckboxDesc(unsigned idx);
+    RadialElement* CreateRadialButton();
+    RadialElement* GetRadialButtonDesc(unsigned idx);
 
     UIElement* GetHeaderElement() { return headerElement_; }
+    UIElement* GetBodyElement()   { return bodyElement_;   }
     Text* GetTitleTextElement();
 
     void SetEnabled(bool enabled);
-    void SetSize(int width, int height);
-    void SetSize(const IntVector2& size);
+
+    bool SetHeaderFont(const String& fontName, int size = DEFAULT_FONT_SIZE);
+    bool SetHeaderFont(Font* font, int size = DEFAULT_FONT_SIZE);
+    bool SetHeaderFontSize(int size);
+    void SetHeaderText(const String& text);
 
 protected:
-    void InitInternal();
     void HandleCheckbox(StringHash eventType, VariantMap& eventData);
     void HandlePressed(StringHash eventType, VariantMap& eventData);
     void SendGroupToggleEvent(int idx);
 
 protected:
-    WeakPtr<UIElement>   headerElement_;
-    WeakPtr<Text>        titleText_;
+    WeakPtr<UIElement> headerElement_;
+    WeakPtr<Text>      headerText_;
+    WeakPtr<UIElement> bodyElement_;
 
-    Vector<CheckboxDesc> childList_;
-    IntVector2           internalSize_; 
+    Vector<RadialElement> childList_;
+    IntVector2         internalSize_; 
 };
 
 

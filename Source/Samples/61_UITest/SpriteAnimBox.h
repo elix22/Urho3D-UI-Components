@@ -48,29 +48,35 @@ public:
     void ShowHeader(bool show);
     void ShowControl(bool show);
 
-    void Init(IntVector2 &size, bool showHeader=false, bool showControl=false);
+    void Create(IntVector2 &size, bool showHeader=false, bool showControl=false);
     void AddSprite(const String& spriteFile);
     void SetFPS(float fps) { assert(fps >= 1.0f); frameMsec_ = (int)(1000.0f/fps); }
-    void SetReady();
+    void SetEnabled(bool enable);
     void Play();
     void Pause();
     void Quit();
 
+    bool SetHeaderFont(const String& fontName, int size = DEFAULT_FONT_SIZE);
+    bool SetHeaderFont(Font* font, int size = DEFAULT_FONT_SIZE);
+    bool SetHeaderFontSize(int size);
+    void SetHeaderText(const String& text);
+
 protected:
+    void SetDefaultPlayButton();
     void HandleUpdate(StringHash eventType, VariantMap& eventData);
     void HandleCheckbox(StringHash eventType, VariantMap& eventData);
 
 protected:
-    WeakPtr<UIElement>  headerElement_;
-    WeakPtr<UIElement>  controlElement_;
+    WeakPtr<UIElement>   headerElement_;
+    WeakPtr<UIElement>   controlElement_;
     WeakPtr<BorderImage> bodyElement_;
-    WeakPtr<Text>       headerText_;
-    WeakPtr<CheckBox>   playButton_;
+    WeakPtr<Text>        headerText_;
+    WeakPtr<CheckBox>    playButton_;
 
-    Vector<Texture2D*> spriteList_;
-    int                spriteIndex_;
-    int                elapsedTime_;
-    int                frameMsec_;
-    bool               paused_;
+    Vector<Texture2D*>   spriteList_;
+    int                  spriteIndex_;
+    int                  elapsedTime_;
+    int                  frameMsec_;
+    bool                 paused_;
 };
 

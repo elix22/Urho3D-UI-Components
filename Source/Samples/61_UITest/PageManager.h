@@ -20,59 +20,49 @@
 // THE SOFTWARE.
 //
 #pragma once
-#include <Urho3D/UI/BorderImage.h>
-#include <Urho3D/UI/CheckBox.h>
+#include <Urho3D/Core/Object.h>
+//#include <Urho3D/UI/CheckBox.h>
 
 namespace Urho3D
 {
 extern const char* UI_CATEGORY;
+class Button;
 }
 using namespace Urho3D;
 //=============================================================================
 //=============================================================================
-/// group button released.
-URHO3D_EVENT(E_TABSELECTED, TabSelected)
+class PageManager : public Object
 {
-    URHO3D_PARAM(P_ELEMENT, Element);              // UIElement pointer
-    URHO3D_PARAM(P_INDEX, Index);                  // int
-}
-
-struct TabElement
-{
-    WeakPtr<CheckBox>    tabButton_;
-    WeakPtr<Text>        tabText_;
-    WeakPtr<BorderImage> tabBody_;
-};
-
-//=============================================================================
-//=============================================================================
-class TabGroup : public BorderImage
-{
-    URHO3D_OBJECT(TabGroup, BorderImage);
+    URHO3D_OBJECT(PageManager, Object);
 public:
     static void RegisterObject(Context* context);
 
-    TabGroup(Context *context);
-    virtual ~TabGroup();
+    PageManager(Context *context);
+    virtual ~PageManager();
 
-    TabElement* CreateTab(const IntVector2 &tabSize, const IntVector2 &bodySize);
-    TabElement* TabGroup::GetTabElement(unsigned idx);
+    bool CreatePages(int numPages);
 
-    void SetEnabled(bool enabled);
+    UIElement* GetControlPage() { return controlPage_; }
 
-    UIElement* GetHeaderElement() { return headerElement_; }
-    UIElement* GetBodyElement()   { return bodyElement_;   }
-
-protected:
-    void HandleTabToggled(StringHash eventType, VariantMap& eventData);
-    void SendTabSelectedEvent(int idx);
+    UIElement* GetRoot();
+    UIElement* GetPageRoot(unsigned idx);
+    void SetPageIndex(int idx);
+    int GetPageIndex();
 
 protected:
-    WeakPtr<UIElement> headerElement_;
-    WeakPtr<UIElement> bodyElement_;
+    Button* CreateButton(const IntVector2 &pos, const IntRect &rect, const Color &color);
+    void UpdateButtonState(int idx);
+    void HandleButtonReleased(StringHash eventType, VariantMap& eventData);
 
-    IntVector2         internalSize_; 
-    Vector<TabElement> childList_;
+protected:
+    WeakPtr<UIElement> controlPage_;
+    Vector<UIElement*> pageList_;
+    IntVector2         rootSize_;
+    int                currentPageIdx_;
+
+    // buttons
+    WeakPtr<Button>    buttonPrev_;
+    WeakPtr<Button>    buttonNext_;
 };
 
 
