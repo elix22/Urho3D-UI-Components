@@ -224,7 +224,15 @@ void OutputNode::HandleButtonDragEnd(StringHash eventType, VariantMap& eventData
 
     if ( GetSubsystem<InputNodeManager>()->GetNodesInside(result, p0, s0) )
     {
-        AttemptConnect(result[0]->GetInputParent());
+        for ( unsigned i = 0; i < result.Size(); ++i )
+        {
+            // skip if already connected
+            if ( result[i]->GetInputParent()->GetConnectedOutputNode() )
+                continue;
+
+            if ( AttemptConnect(result[i]->GetInputParent()) )
+                break;
+        }
     }
 }
 

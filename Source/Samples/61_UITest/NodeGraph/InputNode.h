@@ -47,6 +47,7 @@ public:
     InputBox* GetInputBox() { return inputBox_; }
 
     void SetConnectedOutputNode(OutputNode *outputNode);
+    OutputNode* GetConnectedOutputNode() { return connectedOutputNode_; }
 
     // related to timevar input
     virtual float GetValueRangeMin(const String &varName);

@@ -101,9 +101,7 @@ bool InputNodeManager::GetNodesInside(Vector<InputBox*>& result, const Vector2 &
 
         if ( plen < slen )
         {
-            // only accept the 1st encountered node            
             result.Push(inputBoxList_[i]);
-            break;
         }
     }
 
