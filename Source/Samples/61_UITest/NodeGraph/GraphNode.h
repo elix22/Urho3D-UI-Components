@@ -51,15 +51,11 @@ URHO3D_EVENT(E_BASE_DRAGMOVE, BaseDragMove)
 class GraphNode : public BorderImage
 {
     URHO3D_OBJECT(GraphNode, BorderImage);
-    //friend class IOElement;
 public:
     static void RegisterObject(Context* context);
 
     GraphNode(Context *context);
     virtual ~GraphNode();
-
-    bool Init();
-    virtual bool Create(const IntVector2 &pos, const IntVector2 &size);
 
     void AddChild(UIElement* element);
 

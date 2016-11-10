@@ -47,14 +47,16 @@ void GraphNode::RegisterObject(Context* context)
 {
     context->RegisterFactory<GraphNode>(UI_CATEGORY);
 
+    // register all node graph components
+    NodeHeader::RegisterObject(context);
     InputNodeManager::RegisterObject(context);
 
-    NodeHeader::RegisterObject(context);
-
+    // io elements
     IOElement::RegisterObject(context);
     InputNode::RegisterObject(context);
     OutputNode::RegisterObject(context);
 
+    // specific io elements
     SlideVarInput::RegisterObject(context);
     TimeVarInput::RegisterObject(context);
 }
@@ -138,16 +140,6 @@ void GraphNode::AddChild(UIElement* element)
     }
 }
 
-bool GraphNode::Init()
-{
-    return true;
-}
-
-bool GraphNode::Create(const IntVector2 &pos, const IntVector2 &size)
-{
-    return true;
-}
-
 void GraphNode::SetEnabled(bool enable)
 {
     /// disabled - use the header instead
@@ -183,8 +175,6 @@ void GraphNode::SetHeaderText(const String& text)
     headerText_->SetText(text);
 }
 
-//===============================================
-//===============================================
 void GraphNode::OnDoubleClick(const IntVector2& position, const IntVector2& screenPosition, 
                               int button, int buttons, int qualifiers, Cursor* cursor)
 {
@@ -367,20 +357,19 @@ const Variant& GraphNode::GetCurrentValue(const String &varName)
 
 IOElement* GraphNode::FindInuptVarName(const String &varName)
 {
-    cacheVarNameToIOElement_;
-
     HashMap<String, IOElement*>::Iterator itr = cacheVarNameToIOElement_.Find( varName );
     IOElement *elem = NULL;
 
     if ( itr != cacheVarNameToIOElement_.End() )
     {
-        elem = itr->second_;
-        return elem;
+        return itr->second_;
     }
 
     // else query
     for ( unsigned i = 0; i < inputBodyElement_->GetNumChildren(); ++i )
     {
+        // we've already insured that every child in inputBodyElement_
+        // must be IOElement, no need to dynamically cast to be sure
         elem = (IOElement*)inputBodyElement_->GetChild(i);
 
         if ( elem->GetVariableName() == varName )

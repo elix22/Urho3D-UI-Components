@@ -230,7 +230,7 @@ void OutputNode::HandleButtonDragEnd(StringHash eventType, VariantMap& eventData
             if ( result[i]->GetInputParent()->GetConnectedOutputNode() )
                 continue;
 
-            if ( AttemptConnect(result[i]->GetInputParent()) )
+            if ( AttemptConnect( result[i]->GetInputParent() ) )
                 break;
         }
     }
@@ -238,29 +238,32 @@ void OutputNode::HandleButtonDragEnd(StringHash eventType, VariantMap& eventData
 
 bool OutputNode::AttemptConnect(InputNode *inputNode)
 {
-    connectedInputNode_ = inputNode;
-    connectedInputNode_->SetConnectedOutputNode(this);
-
-    if ( connectedInputNode_->GetNodeBasePtr() != GetNodeBasePtr() )
+    if ( inputNode )
     {
-        ctrlButton_->SetColor(CONNECTEDColor);
+        connectedInputNode_ = inputNode;
+        connectedInputNode_->SetConnectedOutputNode(this);
 
-        if (absolutePositionList_.Size() == 0)
+        if ( connectedInputNode_->GetNodeBasePtr() != GetNodeBasePtr() )
         {
-            IntVector2 p0 = outputBox_->GetPosition() + controlBoxSize_/2;
-            IntVector2 p4 = connectedInputNode_->GetInputBox()->GetPosition() + controlBoxSize_/2;
+            ctrlButton_->SetColor(CONNECTEDColor);
 
-            CreateLinePoints( p0, p4 );
+            if (absolutePositionList_.Size() == 0)
+            {
+                IntVector2 p0 = outputBox_->GetPosition() + controlBoxSize_/2;
+                IntVector2 p4 = connectedInputNode_->GetInputBox()->GetPosition() + controlBoxSize_/2;
+
+                CreateLinePoints( p0, p4 );
+            }
+
+            SnapToInputNode();
+
+            SubscribeToEvent(connectedInputNode_, E_RECEIVER_MOVED, URHO3D_HANDLER(OutputNode, HandleReceiverMoved));
         }
-
-        SnapToInputNode();
-
-        SubscribeToEvent(connectedInputNode_, E_RECEIVER_MOVED, URHO3D_HANDLER(OutputNode, HandleReceiverMoved));
-    }
-    else
-    {
-        connectedInputNode_->SetConnectedOutputNode(NULL);
-        connectedInputNode_ = NULL;
+        else
+        {
+            connectedInputNode_->SetConnectedOutputNode(NULL);
+            connectedInputNode_ = NULL;
+        }
     }
 
     return (connectedInputNode_ != NULL);

@@ -115,7 +115,6 @@ void Main::CreatePageManager()
 {
     PageManager *pageManager = GetSubsystem<PageManager>();
     pageManager->CreatePages(2);
-    //pageManager->SetPageIndex(0);
 }
 
 void Main::CreateGUI()
@@ -125,18 +124,20 @@ void Main::CreateGUI()
     UIElement* root = ui->GetRoot();
     root->SetDefaultStyle(cache->GetResource<XMLFile>("UI/DefaultStyle.xml"));
 
-    PageManager *pageManager = GetSubsystem<PageManager>();
-    //pageManager->SetPageIndex(1);
     CreateRadialGroup();
     CreateTabGroup();
     CreateSpriteAnimBox();
     CreateLineComponents();
     CreateDrawTool();
 
+    // set page
+    PageManager *pageManager = GetSubsystem<PageManager>();
     pageManager->SetPageIndex(1);
+
     CreateSliderBarInput();
     CreateNodeGraph();
 
+    // set page
     pageManager->SetPageIndex(0);
 }
 
@@ -373,6 +374,7 @@ void Main::CreateSliderBarInput()
         Color colorBackground_;
     };
 
+    // setup the callback helper
     UICallbackHelper *colorChangedHelper = new UICallbackHelper(context_);
     root->AddChild(colorChangedHelper);
     colorChangedHelper->SetBackgroundColor(colorBackground_);
@@ -401,7 +403,7 @@ void Main::CreateNodeGraph()
     nodeBase5->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
     nodeBase5->GetFooterTextElement()->SetText("-inputs Xi and Yi are locked\n"
                                                "-the 'out' node is also locked\n"
-                                               "but still pulling data from there\n");
+                                               "but still can pull data from it\n");
 
     IntVector2 size3(25, 25);
     InputNode *inputNode0 = nodeBase5->CreateChild<InputNode>();
@@ -438,7 +440,7 @@ void Main::CreateNodeGraph()
     // footer
     nodeBase->GetFooterElement()->SetVisible(true);
     nodeBase->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase->GetFooterTextElement()->SetText("-drag the red box next to the N\nand connect to the yellow Ni");
+    nodeBase->GetFooterTextElement()->SetText("-drag the red box next to the\nN and connect to the yellow Ni");
 
     SlideVarInput *slideVar = root->CreateChild<SlideVarInput>();
     nodeBase->AddChild(slideVar);
@@ -522,7 +524,7 @@ void Main::CreateNodeGraph()
     // footer info
     nodeBasey->GetFooterElement()->SetVisible(true);
     nodeBasey->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBasey->GetFooterTextElement()->SetText("-note: +y on the screen\nmeans towards the bottom");
+    nodeBasey->GetFooterTextElement()->SetText("-note: moving in +y on the\nmain screen means moving\ntowards bottom");
 
     // create timed input
     IntVector2 sizey0(200, 100);
@@ -546,13 +548,8 @@ void Main::CreateNodeGraph()
     outNodey->SetEnableCtrlButton(false); //lock
 
     //===========================================
-    // processor
-    //===========================================
-    Texture2D *balltex2d = cache->GetResource<Texture2D>("Urho2D/Ball.png");
-
-    int numSpawns = slideVar->GetCurrentValue().GetInt();
-
     // InputProcessor
+    //===========================================
     class InputProcessor : public UIElement
     {
         URHO3D_OBJECT(InputProcessor, UIElement);
@@ -567,7 +564,10 @@ void Main::CreateNodeGraph()
         };
     public:
         InputProcessor(Context *context) : UIElement(context) , 
-            ballCount_(0), numBallsShown_(0), dataSet_(false), minTime_(0.0f), maxTime_(0.0f){}
+            ballCount_(0), numBallsShown_(0), dataSet_(false), minTime_(0.0f), maxTime_(0.0f)
+        {
+        }
+
         virtual ~InputProcessor()
         {
             ballList_.Clear();
@@ -595,7 +595,6 @@ void Main::CreateNodeGraph()
                 return;
 
             Variant var = outputNode_->GetCurrentValue("Ni");
-
             ballCount_ = 0;
 
             if (var != Variant::EMPTY )
@@ -692,13 +691,12 @@ void Main::CreateNodeGraph()
         float               maxTime_;
     };
 
-    //OutputNode *outNode2;
+    // create the processor
     InputProcessor *inputProcessor = new InputProcessor(context_);
     root->AddChild(inputProcessor);
 
     inputProcessor->SetOutputConnection(outNode2);
     inputProcessor->Start();
-
 }
 
 void Main::CreateInstructions()
