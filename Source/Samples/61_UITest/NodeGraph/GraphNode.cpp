@@ -63,7 +63,7 @@ GraphNode::GraphNode(Context *context)
     : BorderImage(context)
     , footerToggle_(true)
 {
-    SetEnabled(false);
+    UIElement::SetEnabled(false);
     InitInternal();
 }
 
