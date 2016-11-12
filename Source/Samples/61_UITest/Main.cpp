@@ -607,6 +607,7 @@ void Main::CreateNodeGraph()
 
             elapsedTimeAccum_ += timeStep;
 
+            if ( !limitFrameRate_ || timerFrame_.GetMSec(false) > FrameRate_MSec)
             {
                 if (ballCount_ > 0)
                 {
@@ -706,6 +707,7 @@ void Main::CreateNodeGraph()
         bool                limitFrameRate_;
         Timer               timerFrame_;
 
+        enum FrameRateType { FrameRate_MSec = 32 };
     };
 
     // create the processor
