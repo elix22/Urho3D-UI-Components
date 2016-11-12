@@ -564,7 +564,9 @@ void Main::CreateNodeGraph()
         };
     public:
         InputProcessor(Context *context) : UIElement(context) , 
-            ballCount_(0), numBallsShown_(0), dataSet_(false), minTime_(0.0f), maxTime_(0.0f)
+            ballCount_(0), numBallsShown_(0), dataSet_(false), 
+            minTime_(0.0f), maxTime_(0.0f), 
+            elapsedTimeAccum_(0.0f), limitFrameRate_(true)
         {
         }
 
@@ -582,6 +584,7 @@ void Main::CreateNodeGraph()
         {
             minTime_ = outputNode_->GetStartTime("Xi");
             maxTime_ = outputNode_->GetEndTime("Xi");
+            elapsedTimeAccum_ = 0.0f;
 
             SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(InputProcessor, HandleUpdate));
         }
@@ -602,11 +605,18 @@ void Main::CreateNodeGraph()
                 ballCount_ = var.GetInt();
             }
 
-            if ( ballCount_ > 0 )
-            {
-                UpdateBallVis();
+            elapsedTimeAccum_ += timeStep;
 
-                UpdateBallPosition(timeStep);
+            {
+                if (ballCount_ > 0)
+                {
+                    UpdateBallVis();
+
+                    UpdateBallPosition(elapsedTimeAccum_);
+                }
+
+                elapsedTimeAccum_ = 0.0f;
+                timerFrame_.Reset();
             }
         }
 
@@ -680,6 +690,8 @@ void Main::CreateNodeGraph()
             numBallsShown_++;
         }
 
+        void LimitFrameRate(bool limit) { limitFrameRate_ = limit; }
+
     protected:
         WeakPtr<OutputNode> outputNode_;
         Vector<BallData>    ballList_;
@@ -689,6 +701,11 @@ void Main::CreateNodeGraph()
         bool                dataSet_;
         float               minTime_;
         float               maxTime_;
+
+        float               elapsedTimeAccum_;
+        bool                limitFrameRate_;
+        Timer               timerFrame_;
+
     };
 
     // create the processor
