@@ -194,7 +194,7 @@ void RadialGroup::HandleCheckbox(StringHash eventType, VariantMap& eventData)
     {
         CheckBox *chkbox = childList_[i].checkbox_;
 
-        if (chkbox == element && !chkbox->IsChecked())
+        if (chkbox == element)
             checkedIdx = i;
 
         chkbox->SetCheckedInternal(chkbox == element);
