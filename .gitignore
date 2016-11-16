@@ -4,10 +4,6 @@
 *.o
 *.obj
 
-*.png
-*.psd
-*.ttf
-
 # Precompiled Headers
 *.gch
 *.pch
@@ -47,15 +43,3 @@ Android/
 
 !AndroidStudio
 
-fbx/
-*.fbx
-#*.mdl
-#*.tga
-#*.png
-#*.ani
-./bin/CoreData
-./bin/Data
-./build/bin/Autoload
-./build/bin/CoreData
-./build/bin/Data
-./CMake
