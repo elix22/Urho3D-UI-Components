@@ -54,3 +54,9 @@ fbx/
 #*.tga
 #*.png
 #*.ani
+./bin/CoreData
+./bin/Data
+./build/bin/Autoload
+./build/bin/CoreData
+./build/bin/Data
+./CMake

@@ -33,7 +33,7 @@ include (UrhoCommon)
 
 # Find Urho3D library
 find_package (Urho3D REQUIRED)
-include_directories (/Users/sabotage3d/DEV/Urho3D-UI-Components/Source/Urho3D/UI ${URHO3D_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/Source/Samples/61_UITest/ ${PROJECT_SOURCE_DIR}/Source/Samples/61_UITest/NodeGraph/)
+include_directories (${PROJECT_SOURCE_DIR}/Source/Urho3D/UI ${URHO3D_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/Source/Samples/61_UITest/ ${PROJECT_SOURCE_DIR}/Source/Samples/61_UITest/NodeGraph/)
 
 # Define target name
 set (TARGET_NAME ${NAME})
