@@ -337,10 +337,10 @@ void Main::CreateSliderBarInput()
     slideVarNode->SetHeaderText("Screen color");
 
     // footer info
-    slideVarNode->GetFooterElement()->SetVisible(true);
-    slideVarNode->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    slideVarNode->GetFooterTextElement()->SetText("-drag on the red bar to\nchange value\n-drag the header to move\n"
-                                              "-double click the header\nto toggle the footer");
+    slideVarNode->SetFooterVisible(true);
+    slideVarNode->SetFooterFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    slideVarNode->SetFooterText("-drag on the red bar to\nchange value\n-drag the header to move\n"
+                                "-double click the header\nto toggle the footer");
 
     IntVector2 size2(200, 30);
     slideVarNode->CreateBar("-", size2, false);
