@@ -82,9 +82,6 @@ void Main::Setup()
     engineParameters_["Headless"]     = false;
     engineParameters_["WindowWidth"]  = 1280; 
     engineParameters_["WindowHeight"] = 720;
-
-    //Resource folders
-    engineParameters_["ResourcePaths"] = "CoreData;Data;Resources;";
 }
 
 void Main::Start()
