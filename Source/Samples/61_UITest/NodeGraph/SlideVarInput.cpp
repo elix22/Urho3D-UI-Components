@@ -93,7 +93,7 @@ bool SlideVarInput::CreateBar(const String &variableName, const IntVector2 &size
     return true;
 }
 
-void SlideVarInput::SetRange(Variant &vmin, Variant &vmax)
+void SlideVarInput::SetRange(const Variant &vmin, const Variant &vmax)
 {
     if (!(vmin.GetType() == VAR_INT || vmin.GetType() == VAR_FLOAT) ||
         !(vmax.GetType() == VAR_INT || vmax.GetType() == VAR_FLOAT) ||
@@ -106,7 +106,7 @@ void SlideVarInput::SetRange(Variant &vmin, Variant &vmax)
     varMax_ = vmax;
 }
 
-void SlideVarInput::SetCurrentValue(Variant &val)
+void SlideVarInput::SetCurrentValue(const Variant &val)
 {
     varCurrentValue_ = val;
 

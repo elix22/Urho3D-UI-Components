@@ -21,7 +21,7 @@
 //
 #pragma once
 #include <Urho3D/UI/BorderImage.h>
-#include <Urho3D/UI/CheckBox.h>
+//#include <Urho3D/UI/CheckBox.h>
 
 namespace Urho3D
 {
@@ -56,7 +56,7 @@ public:
     virtual ~TabGroup();
 
     TabElement* CreateTab(const IntVector2 &tabSize, const IntVector2 &bodySize);
-    TabElement* TabGroup::GetTabElement(unsigned idx);
+    TabElement* GetTabElement(unsigned idx);
 
     void SetEnabled(bool enabled);
 
