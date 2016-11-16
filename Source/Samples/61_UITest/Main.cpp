@@ -82,6 +82,9 @@ void Main::Setup()
     engineParameters_["Headless"]     = false;
     engineParameters_["WindowWidth"]  = 1280; 
     engineParameters_["WindowHeight"] = 720;
+
+    //Resource folders
+    engineParameters_["ResourcePaths"] = "CoreData;Data;Resources;";
 }
 
 void Main::Start()
@@ -350,6 +353,7 @@ void Main::CreateSliderBarInput()
 
     slideBar->CreateBar("-",size2);
     slideBar->SetColor(Color(0.8f, 0.3f, 0.3f) );
+    //slideBar->SetRange((Variant)0.0f, (Variant)1.0f);
     slideBar->SetRange((Variant)0.0f, (Variant)1.0f);
     slideBar->SetCurrentValue((Variant)colorBackground_.r_);
     slideBar->SetSensitivity(0.005f);

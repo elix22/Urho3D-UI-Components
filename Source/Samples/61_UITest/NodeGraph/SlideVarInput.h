@@ -55,8 +55,8 @@ public:
 
     bool CreateBar(const String &variableName, const IntVector2 &size);
 
-    void SetRange(Variant &vmin, Variant &vmax);
-    void SetCurrentValue(Variant &val);
+    void SetRange(const Variant &vmin, const Variant &vmax);
+    void SetCurrentValue(const Variant &val);
     void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
     void SetVarChangedCallback(UIElement *process, VarChangedCallback callback);
 

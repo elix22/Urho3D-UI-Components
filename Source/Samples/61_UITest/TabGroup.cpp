@@ -26,7 +26,8 @@
 #include <Urho3D/UI/BorderImage.h>
 #include <Urho3D/UI/Font.h>
 #include <Urho3D/UI/Text.h>
-#include <Urho3D/UI/CheckBox.h>
+//#include <Urho3D/UI/CheckBox.h>
+#include "CheckBox.h"
 #include <Urho3D/Resource/ResourceCache.h>
 
 #include "TabGroup.h"
