@@ -57,6 +57,10 @@ public:
     GraphNode(Context *context);
     virtual ~GraphNode();
 
+    static const Color& GetDefaultHeaderColor()     { return colorHeader_; }
+    static const Color& GetDefaultBodyColor()       { return colorBody_;   }
+    static const IntVector2& GetDefaultIONodeSize() { return ioNodeSize_;  }
+
     void AddChild(UIElement* element);
 
     UIElement* GetHeaderElement()     { return headerElement_;      }
@@ -71,6 +75,11 @@ public:
     bool SetHeaderFont(const String& fontName, int size = DEFAULT_FONT_SIZE);
     bool SetHeaderFont(Font* font, int size = DEFAULT_FONT_SIZE);
     void SetHeaderText(const String& text);
+
+    void SetFooterVisible(bool vis);
+    bool SetFooterFont(const String& fontName, int size = DEFAULT_FONT_SIZE);
+    bool SetFooterFont(Font* font, int size = DEFAULT_FONT_SIZE);
+    void SetFooterText(const String& text);
 
     void SetEnabled(bool enable);
 
@@ -104,6 +113,11 @@ private:
     bool InitInternal();
 
 protected:
+    // static
+    static Color colorHeader_;
+    static Color colorBody_;
+    static IntVector2 ioNodeSize_;
+
     // header
     WeakPtr<BorderImage>  headerElement_;
     WeakPtr<Text>         headerText_;

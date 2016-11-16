@@ -62,6 +62,7 @@ OutputNode::OutputNode(Context *context)
     , showOutputLine_(true)
 {
     SetIOType(IOTYPE_OUTPUT);
+    SetColor(GraphNode::GetDefaultBodyColor());
 }
 
 OutputNode::~OutputNode()

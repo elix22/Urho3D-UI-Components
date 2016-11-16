@@ -46,7 +46,9 @@
 
 #include "GraphNode.h"
 #include "SlideVarInput.h"
+#include "SlideVarNode.h"
 #include "TimeVarInput.h"
+#include "TimeVarNode.h"
 #include "InputNode.h"
 #include "OutputNode.h"
 
@@ -328,32 +330,24 @@ void Main::CreateSliderBarInput()
     UIElement* root = ui->GetRoot();
 
     // create and init nodebase
-    GraphNode *nodeBase = root->CreateChild<GraphNode>();
     IntVector2 pos00(20,100);
-    nodeBase->SetPosition( pos00 );
-    nodeBase->SetColor(Color(0.2f, 0.2f, 0.2f) );
-    nodeBase->SetBodyColor(Color(0.3f, 0.3f, 0.3f));
-    nodeBase->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase->SetHeaderText("Screen color");
-    nodeBase->GetOutputBodyElement()->SetVisible(false);
+    SlideVarNode *slideVarNode = root->CreateChild<SlideVarNode>();
+    slideVarNode->SetPosition(pos00);
+    slideVarNode->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    slideVarNode->SetHeaderText("Screen color");
 
     // footer info
-    nodeBase->GetFooterElement()->SetVisible(true);
-    nodeBase->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase->GetFooterTextElement()->SetText("-drag on the red bar to\nchange value\n-drag the header to move\n"
+    slideVarNode->GetFooterElement()->SetVisible(true);
+    slideVarNode->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    slideVarNode->GetFooterTextElement()->SetText("-drag on the red bar to\nchange value\n-drag the header to move\n"
                                               "-double click the header\nto toggle the footer");
 
-    // use nodeBase to create the element
-    SlideVarInput *slideBar = root->CreateChild<SlideVarInput>();
-    nodeBase->AddChild(slideBar);
     IntVector2 size2(200, 30);
-
-    slideBar->CreateBar("-",size2);
-    slideBar->SetColor(Color(0.8f, 0.3f, 0.3f) );
-    //slideBar->SetRange((Variant)0.0f, (Variant)1.0f);
-    slideBar->SetRange((Variant)0.0f, (Variant)1.0f);
-    slideBar->SetCurrentValue((Variant)colorBackground_.r_);
-    slideBar->SetSensitivity(0.005f);
+    slideVarNode->CreateBar("-", size2, false);
+    slideVarNode->SetBarColor(Color(0.8f, 0.3f, 0.3f) );
+    slideVarNode->SetRange((Variant)0.0f, (Variant)1.0f);
+    slideVarNode->SetCurrentValue((Variant)colorBackground_.r_);
+    slideVarNode->SetSensitivity(0.005f);
 
     // ui callback helper - a direct and alternative method to get events
     // you can use a typical event handler instead, e.g. HandleMessage(StringHash eventType, VariantMap& eventData);
@@ -379,7 +373,7 @@ void Main::CreateSliderBarInput()
     UICallbackHelper *colorChangedHelper = new UICallbackHelper(context_);
     root->AddChild(colorChangedHelper);
     colorChangedHelper->SetBackgroundColor(colorBackground_);
-    slideBar->SetVarChangedCallback(colorChangedHelper, (VarChangedCallback)&UICallbackHelper::RedColorHandler);
+    slideVarNode->SetVarChangedCallback(colorChangedHelper, (VarChangedCallback)&UICallbackHelper::RedColorHandler);
 }
 
 void Main::CreateNodeGraph()
@@ -395,10 +389,9 @@ void Main::CreateNodeGraph()
 
     IntVector2 pos01(350, 350);
     nodeBase5->SetPosition( pos01 );
-    nodeBase5->SetColor(Color(0.2f, 0.2f, 0.2f) );
-    nodeBase5->SetBodyColor(Color(0.3f, 0.3f, 0.3f));
     nodeBase5->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
     nodeBase5->SetHeaderText("Input sum");
+
     // footer info
     nodeBase5->GetFooterElement()->SetVisible(true);
     nodeBase5->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
@@ -409,144 +402,101 @@ void Main::CreateNodeGraph()
     IntVector2 size3(25, 25);
     InputNode *inputNode0 = nodeBase5->CreateChild<InputNode>();
     inputNode0->Create("Ni", size3);
-    inputNode0->SetColor(Color(0.3f, 0.3f, 0.3f) );
 
     IntVector2 size4(25, 25);
     InputNode *inputNodeX = nodeBase5->CreateChild<InputNode>();
     inputNodeX->Create("Xi", size4);
-    inputNodeX->SetColor(Color(0.3f, 0.3f, 0.3f) );
 
     IntVector2 size5(25, 25);
     InputNode *inputNodeY = nodeBase5->CreateChild<InputNode>();
     inputNodeY->Create("Yi", size5);
-    inputNodeY->SetColor(Color(0.3f, 0.3f, 0.3f) );
 
     IntVector2 size7(25, 25);
     OutputNode *outNode2 = nodeBase5->CreateChild<OutputNode>();
     outNode2->Create("out", size5);
-    outNode2->SetColor(Color(0.3f, 0.3f, 0.3f) );
     outNode2->SetEnableCtrlButton(false); // lock
 
     //===========================================
     // ball spwaning node
     //===========================================
-    GraphNode *nodeBase = root->CreateChild<GraphNode>();
     IntVector2 pos22(20,240);
-    nodeBase->SetPosition( pos22 );
-    nodeBase->SetColor(Color(0.2f, 0.2f, 0.2f) );
-    nodeBase->SetBodyColor(Color(0.3f, 0.3f, 0.3f));
-    nodeBase->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase->SetHeaderText("Balls to spawn");
+    SlideVarNode *slideVarNode = root->CreateChild<SlideVarNode>();
+    slideVarNode->SetPosition( pos22 );
+    slideVarNode->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    slideVarNode->SetHeaderText("Balls to spawn");
 
     // footer
-    nodeBase->GetFooterElement()->SetVisible(true);
-    nodeBase->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase->GetFooterTextElement()->SetText("-drag the red box next to the\nN and connect to the yellow Ni");
+    slideVarNode->SetFooterVisible(true);
+    slideVarNode->SetFooterFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    slideVarNode->SetFooterText("-drag the red box next to the\nN and connect to the yellow Ni");
 
-    SlideVarInput *slideVar = root->CreateChild<SlideVarInput>();
-    nodeBase->AddChild(slideVar);
     IntVector2 size222(200, 30);
-
-    slideVar->CreateBar("N", size222);
-    slideVar->SetColor(Color(0.8f, 0.3f, 0.3f) );
-    slideVar->SetRange((Variant)1, (Variant)30);
-    slideVar->SetCurrentValue((Variant)1);
-    slideVar->SetSensitivity(0.1f);
-
-    IntVector2 size2227(25, 25);
-    OutputNode *outNode22 = nodeBase->CreateChild<OutputNode>();
-    outNode22->Create("N", size2227);
-    outNode22->SetColor(Color(0.3f, 0.3f, 0.3f) );
+    slideVarNode->CreateBar("N", size222, true);
+    slideVarNode->SetBarColor(Color(0.8f, 0.3f, 0.3f) );
+    slideVarNode->SetRange((Variant)1, (Variant)30);
+    slideVarNode->SetCurrentValue((Variant)1);
+    slideVarNode->SetSensitivity(0.1f);
 
     //===========================================
     // X variance
     //===========================================
-    GraphNode *nodeBase0 = root->CreateChild<GraphNode>();
-
     IntVector2 pos00(20,340);
-    nodeBase0->SetPosition( pos00 );
-    nodeBase0->SetColor(Color(0.2f, 0.2f, 0.2f) );
-    nodeBase0->SetBodyColor(Color(0.3f, 0.3f, 0.3f));
-    nodeBase0->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase0->SetHeaderText("Vary X input");
+    TimeVarNode *timeVarNodeX = root->CreateChild<TimeVarNode>();
+    timeVarNodeX->SetPosition(pos00);
+    timeVarNodeX->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    timeVarNodeX->SetHeaderText("Vary X input");
 
-    // footer info
-    nodeBase0->GetFooterElement()->SetVisible(true);
-    nodeBase0->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase0->GetFooterTextElement()->SetText("-drag on the small yellow\nsquares to adjust the curve");
+    // footer info (off by default)
+    timeVarNodeX->SetFooterVisible(true);
+    timeVarNodeX->SetFooterFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    timeVarNodeX->SetFooterText("-drag the small yellow\nsquares to adjust the curve");
 
     // create timed input
     IntVector2 size(200, 100);
-    TimeVarInput *timedInput = nodeBase0->CreateChild<TimeVarInput>();
-    timedInput->Create("X", size);
-    timedInput->SetColor(Color(0.7f, 0.4f, 0.4f) );
+    timeVarNodeX->CreateTimeVarInput("X", size);
+    timeVarNodeX->SetScreenColor(Color(0.7f, 0.4f, 0.4f) );
 
     // curve points
     // specifies: time range, values per time and min/max
     // requires the star time = 0
-    Vector2 points[5] =
-    {
-        // time  value
-        { 0.0f,  -200.0f },
-        { 1.0f,   180.0f },
-        { 2.0f,   190.0f },
-        { 3.0f,  -110.0f },
-        { 4.0f,  -200.0f },
-    };
-
     PODVector<Vector2> curvePoints(5);
-    curvePoints[0] = points[0];
-    curvePoints[1] = points[1];
-    curvePoints[2] = points[2];
-    curvePoints[3] = points[3];
-    curvePoints[4] = points[4];
+    curvePoints[0] = Vector2(0.0f, -200.0f);
+    curvePoints[1] = Vector2(1.0f,  180.0f);
+    curvePoints[2] = Vector2(2.0f,  190.0f);
+    curvePoints[3] = Vector2(3.0f, -110.0f);
+    curvePoints[4] = Vector2(4.0f, -200.0f);
 
-    timedInput->InitDataCurvePoints(curvePoints);
-    
-    // create output node
-    IntVector2 size2(25, 25);
-    OutputNode *outNodeX = nodeBase0->CreateChild<OutputNode>();
-    outNodeX->Create("X", size2);
-    outNodeX->SetColor(Color(0.3f, 0.3f, 0.3f) );
-    outNodeX->ConnectToInput(inputNodeX);
-    outNodeX->SetEnableCtrlButton(false); //lock
+    timeVarNodeX->InitDataCurvePoints(curvePoints);
+    timeVarNodeX->ConnectToInput(inputNodeX); // connect input
+    timeVarNodeX->SetEnableCtrlButton(false); // lock
 
     //===========================================
     // Y variance
     //===========================================
-    GraphNode *nodeBasey = root->CreateChild<GraphNode>();
-
     IntVector2 posy(20,510);
-    nodeBasey->SetPosition( posy );
-    nodeBasey->SetColor(Color(0.2f, 0.2f, 0.2f) );
-    nodeBasey->SetBodyColor(Color(0.3f, 0.3f, 0.3f));
-    nodeBasey->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBasey->SetHeaderText("Vary Y input");
-    // footer info
-    nodeBasey->GetFooterElement()->SetVisible(true);
-    nodeBasey->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBasey->GetFooterTextElement()->SetText("-note: moving in +y on the\nmain screen means moving\ntowards bottom");
+    TimeVarNode *timeVarNodeY = root->CreateChild<TimeVarNode>();
+    timeVarNodeY->SetPosition(posy);
+    timeVarNodeY->SetHeaderFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    timeVarNodeY->SetHeaderText("Vary Y input");
+
+    // footer info (off by default)
+    timeVarNodeY->SetFooterVisible(true);
+    timeVarNodeY->SetFooterFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    timeVarNodeY->SetFooterText("-note: moving in +y on the\nmain screen means moving\ntowards the bottom");
 
     // create timed input
     IntVector2 sizey0(200, 100);
-    TimeVarInput *timedInput2 = nodeBasey->CreateChild<TimeVarInput>();
-    timedInput2->Create("Y", sizey0);
-    timedInput2->SetColor(Color(0.7f, 0.4f, 0.4f) );
+    timeVarNodeY->CreateTimeVarInput("Y", sizey0);
+    timeVarNodeY->SetScreenColor(Color(0.7f, 0.4f, 0.4f) );
     curvePoints[0].y_ =  150.0f;
     curvePoints[1].y_ =  150.0f;
     curvePoints[2].y_ = -150.0f;
     curvePoints[3].y_ =  180.0f;
     curvePoints[4].y_ =  150.0f;
 
-    timedInput2->InitDataCurvePoints(curvePoints);
-
-    // create output node
-    IntVector2 sizey2(25, 25);
-    OutputNode *outNodey = nodeBasey->CreateChild<OutputNode>();
-    outNodey->Create("Y", sizey2);
-    outNodey->SetColor(Color(0.3f, 0.3f, 0.3f) );
-    outNodey->ConnectToInput(inputNodeY);
-    outNodey->SetEnableCtrlButton(false); //lock
+    timeVarNodeY->InitDataCurvePoints(curvePoints);
+    timeVarNodeY->ConnectToInput(inputNodeY); // connect input
+    timeVarNodeY->SetEnableCtrlButton(false); // lock
 
     //===========================================
     // InputProcessor
@@ -579,12 +529,12 @@ void Main::CreateNodeGraph()
         void SetOutputConnection(OutputNode *outputNode)
         {
             outputNode_ = outputNode;
+            minTime_ = outputNode_->GetStartTime("Xi");
+            maxTime_ = outputNode_->GetEndTime("Xi");
         }
 
         void Start()
         {
-            minTime_ = outputNode_->GetStartTime("Xi");
-            maxTime_ = outputNode_->GetEndTime("Xi");
             elapsedTimeAccum_ = 0.0f;
 
             SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(InputProcessor, HandleUpdate));

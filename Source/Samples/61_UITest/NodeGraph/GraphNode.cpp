@@ -39,8 +39,17 @@
 #include "OutputNode.h"
 #include "SlideVarInput.h"
 #include "TimeVarInput.h"
+#include "TimeVarNode.h"
+#include "SlideVarNode.h"
 
 #include <Urho3D/DebugNew.h>
+
+//=============================================================================
+//=============================================================================
+Color GraphNode::colorHeader_(0.2f, 0.2f, 0.2f);
+Color GraphNode::colorBody_(0.3f, 0.3f, 0.3f);
+IntVector2 GraphNode::ioNodeSize_(25, 25);
+
 //=============================================================================
 //=============================================================================
 void GraphNode::RegisterObject(Context* context)
@@ -59,6 +68,9 @@ void GraphNode::RegisterObject(Context* context)
     // specific io elements
     SlideVarInput::RegisterObject(context);
     TimeVarInput::RegisterObject(context);
+
+    TimeVarNode::RegisterObject(context);
+    SlideVarNode::RegisterObject(context);
 }
 
 GraphNode::GraphNode(Context *context) 
@@ -66,6 +78,7 @@ GraphNode::GraphNode(Context *context)
     , footerToggle_(true)
 {
     UIElement::SetEnabled(false);
+
     InitInternal();
 }
 
@@ -77,12 +90,14 @@ bool GraphNode::InitInternal()
 {
     SetLayoutBorder(IntRect(2,2,2,2));
     SetLayoutMode(LM_VERTICAL);
+    UIElement::SetColor(colorHeader_);
 
     // header
     headerElement_ = CreateChild<NodeHeader>();
     headerElement_->SetLayoutMode(LM_HORIZONTAL);
     headerElement_->SetLayoutBorder(IntRect(5,0,5,0));
     headerElement_->SetMinHeight(25);
+    headerElement_->SetColor(colorHeader_);
 
     headerText_ = headerElement_->CreateChild<Text>();
     headerText_->SetAlignment(HA_LEFT, VA_CENTER);
@@ -92,23 +107,27 @@ bool GraphNode::InitInternal()
     bodyElement_->SetLayoutMode(LM_HORIZONTAL);
     bodyElement_->SetLayoutBorder(IntRect(0,0,0,0));
     bodyElement_->SetClipChildren(true);
+    bodyElement_->SetColor(colorBody_);
 
         // inner bodies
         inputBodyElement_= bodyElement_->CreateChild<BorderImage>();
         inputBodyElement_->SetLayoutMode(LM_VERTICAL);
         inputBodyElement_->SetLayoutBorder(IntRect(0,0,0,0));
         inputBodyElement_->SetClipChildren(true);
+        inputBodyElement_->SetColor(colorBody_);
 
         outputBodyElement_= bodyElement_->CreateChild<BorderImage>();
         outputBodyElement_->SetLayoutMode(LM_VERTICAL);
         outputBodyElement_->SetLayoutBorder(IntRect(0,0,0,0));
         outputBodyElement_->SetClipChildren(true);
+        outputBodyElement_->SetColor(colorBody_);
 
     // footer - not visible by default
     footerElement_ = CreateChild<BorderImage>();
     footerElement_->SetLayoutMode(LM_HORIZONTAL);
     footerElement_->SetLayoutBorder(IntRect(5,0,0,0));
     footerElement_->SetVisible(false);
+    footerElement_->SetColor(colorHeader_);
 
     footerText_ = footerElement_->CreateChild<Text>();
 
@@ -173,6 +192,26 @@ bool GraphNode::SetHeaderFont(Font* font, int size)
 void GraphNode::SetHeaderText(const String& text)
 {
     headerText_->SetText(text);
+}
+
+void GraphNode::SetFooterVisible(bool vis)
+{
+    footerElement_->SetVisible(vis);
+}
+
+bool GraphNode::SetFooterFont(const String& fontName, int size)
+{
+    return footerText_->SetFont(fontName, size);
+}
+
+bool GraphNode::SetFooterFont(Font* font, int size)
+{
+    return footerText_->SetFont(font, size);
+}
+
+void GraphNode::SetFooterText(const String& text)
+{
+    footerText_->SetText(text);
 }
 
 void GraphNode::OnDoubleClick(const IntVector2& position, const IntVector2& screenPosition, 

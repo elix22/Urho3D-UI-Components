@@ -112,8 +112,7 @@ UIElement* IOElement::RecursiveFindNodebase(UIElement *searchParent)
         return NULL;
     }
 
-    if ( searchParent->GetTypeName() == "GraphNode" || 
-         searchParent->GetTypeInfoStatic()->GetTypeName() == "GraphNode" )
+    if ( searchParent->IsInstanceOf( StringHash("GraphNode") ) )
     {
         return searchParent;
     }

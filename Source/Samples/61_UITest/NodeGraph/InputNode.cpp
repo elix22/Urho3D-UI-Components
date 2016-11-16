@@ -52,6 +52,7 @@ InputNode::InputNode(Context *context)
     , showInputBox_(true)
 {
     SetIOType(IOTYPE_INPUT);
+    SetColor(GraphNode::GetDefaultBodyColor());
 }
 
 InputNode::~InputNode()
