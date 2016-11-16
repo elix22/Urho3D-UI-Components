@@ -393,27 +393,24 @@ void Main::CreateNodeGraph()
     nodeBase5->SetHeaderText("Input sum");
 
     // footer info
-    nodeBase5->GetFooterElement()->SetVisible(true);
-    nodeBase5->GetFooterTextElement()->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
-    nodeBase5->GetFooterTextElement()->SetText("-inputs Xi and Yi are locked\n"
-                                               "-the 'out' node is also locked\n"
-                                               "but still can pull data from it\n");
+    nodeBase5->SetFooterVisible(true);
+    nodeBase5->SetFooterFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 10);
+    nodeBase5->SetFooterText("-inputs Xi and Yi are locked\n"
+                             "-the 'out' node is also locked\n"
+                             "but still can pull data from it\n");
 
-    IntVector2 size3(25, 25);
+    IntVector2 size25(GraphNode::GetDefaultIONodeSize());
     InputNode *inputNode0 = nodeBase5->CreateChild<InputNode>();
-    inputNode0->Create("Ni", size3);
+    inputNode0->Create("Ni", size25);
 
-    IntVector2 size4(25, 25);
     InputNode *inputNodeX = nodeBase5->CreateChild<InputNode>();
-    inputNodeX->Create("Xi", size4);
+    inputNodeX->Create("Xi", size25);
 
-    IntVector2 size5(25, 25);
     InputNode *inputNodeY = nodeBase5->CreateChild<InputNode>();
-    inputNodeY->Create("Yi", size5);
+    inputNodeY->Create("Yi", size25);
 
-    IntVector2 size7(25, 25);
     OutputNode *outNode2 = nodeBase5->CreateChild<OutputNode>();
-    outNode2->Create("out", size5);
+    outNode2->Create("out", size25);
     outNode2->SetEnableCtrlButton(false); // lock
 
     //===========================================
